@@ -1,35 +1,71 @@
 import { Tabs } from 'expo-router';
-import React from 'react';
+import { Text, StyleSheet } from 'react-native';
+import { colors } from '@/src/theme';
 
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+function TabIcon({ label, focused }: { label: string; focused: boolean }) {
+  return (
+    <Text style={[styles.icon, focused && styles.iconFocused]}>{label}</Text>
+  );
+}
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
-        tabBarButton: HapticTab,
-      }}>
+        tabBarStyle: styles.tabBar,
+        tabBarActiveTintColor: colors.primaryContent,
+        tabBarInactiveTintColor: colors.textMuted,
+        tabBarLabelStyle: styles.tabLabel,
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          tabBarIcon: ({ focused }) => <TabIcon label="~" focused={focused} />,
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="chords"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: 'Chords',
+          tabBarIcon: ({ focused }) => <TabIcon label="#" focused={focused} />,
+        }}
+      />
+      <Tabs.Screen
+        name="progressions"
+        options={{
+          title: 'Progressions',
+          tabBarIcon: ({ focused }) => (
+            <TabIcon label=">" focused={focused} />
+          ),
         }}
       />
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  tabBar: {
+    backgroundColor: colors.bgAlt,
+    borderTopColor: colors.border,
+    borderTopWidth: 2,
+    height: 60,
+    paddingBottom: 6,
+  },
+  tabLabel: {
+    fontWeight: '700',
+    fontSize: 11,
+    fontFamily: 'monospace',
+  },
+  icon: {
+    fontSize: 22,
+    fontWeight: '800',
+    fontFamily: 'monospace',
+    color: colors.textMuted,
+  },
+  iconFocused: {
+    color: colors.primary,
+  },
+});
