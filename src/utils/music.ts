@@ -12,6 +12,8 @@ export const ALL_KEYS = [
 
 export type Key = (typeof ALL_KEYS)[number];
 
+export const NATURAL_KEYS: Key[] = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+
 /**
  * Maps a Roman numeral to a semitone offset from the root
  * and a quality suffix for chord name construction.

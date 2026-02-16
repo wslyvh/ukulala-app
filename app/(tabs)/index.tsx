@@ -1,17 +1,20 @@
-import { useState, useCallback } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { useState, useEffect, useCallback } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, useWindowDimensions, Image } from 'react-native';
 import { Link } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { ScreenView, Button } from '@/src/ui';
 import { ChordDiagram } from '@/src/components/ChordDiagram';
 import { progressions } from '@/src/data/progressions';
 import { findChord } from '@/src/data/chords';
 import {
   ALL_KEYS,
+  NATURAL_KEYS,
   resolveProgression,
   numeralDegree,
   pickRandom,
 } from '@/src/utils/music';
 import type { Key } from '@/src/utils/music';
+import { loadSelectedKeys, saveSelectedKeys } from '@/src/storage';
 import { colors, spacing, radii } from '@/src/theme';
 
 const DEGREE_COLORS: Record<number, string> = {
@@ -43,34 +46,88 @@ const KEY_BAR_ITEMS: KeyBarItem[] = [
   { type: 'natural', key: 'B', label: 'B' },
 ];
 
+function pickKeyFromPool(pool: readonly Key[], avoid?: Key): Key {
+  if (pool.length === 0) return pickRandom(ALL_KEYS);
+  if (pool.length === 1) return pool[0];
+  let next: Key;
+  do {
+    next = pickRandom(pool);
+  } while (next === avoid);
+  return next;
+}
+
 function getInitialState() {
   const prog = pickRandom(progressions);
-  const key = pickRandom(ALL_KEYS);
-  return { prog, key };
+  const key = pickKeyFromPool(NATURAL_KEYS);
+  return { prog, key, selectedKeys: [...NATURAL_KEYS] as Key[] };
 }
 
 export default function HomeScreen() {
   const [state, setState] = useState(getInitialState);
 
-  const shuffleProgression = useCallback(() => {
-    setState((prev) => ({ ...prev, prog: pickRandom(progressions) }));
-  }, []);
-
-  const setKey = useCallback((k: Key) => {
-    setState((prev) => ({ ...prev, key: k }));
-  }, []);
-
-  const randomizeKey = useCallback(() => {
-    setState((prev) => {
-      let next: Key;
-      do {
-        next = pickRandom(ALL_KEYS);
-      } while (next === prev.key);
-      return { ...prev, key: next };
+  useEffect(() => {
+    loadSelectedKeys().then((stored) => {
+      if (stored != null) {
+        setState((prev) => ({
+          ...prev,
+          selectedKeys: stored,
+          key: pickKeyFromPool(stored.length > 0 ? stored : ALL_KEYS),
+        }));
+      }
     });
   }, []);
 
-  const { prog, key } = state;
+  const shuffle = useCallback(() => {
+    setState((prev) => {
+      const pool = prev.selectedKeys.length > 0 ? prev.selectedKeys : [...ALL_KEYS];
+      return {
+        ...prev,
+        prog: pickRandom(progressions),
+        key: pickKeyFromPool(pool, prev.key),
+      };
+    });
+  }, []);
+
+  const toggleKey = useCallback((k: Key) => {
+    setState((prev) => {
+      const has = prev.selectedKeys.includes(k);
+      const next = has
+        ? prev.selectedKeys.filter((x) => x !== k)
+        : [...prev.selectedKeys, k];
+      saveSelectedKeys(next);
+
+      let newKey = prev.key;
+      if (!has) {
+        // Toggling ON → switch display to that key
+        newKey = k;
+      } else if (prev.key === k) {
+        // Toggling OFF the current key → pick from remaining
+        newKey = pickKeyFromPool(next.length > 0 ? next : [...ALL_KEYS]);
+      }
+
+      return { ...prev, selectedKeys: next, key: newKey };
+    });
+  }, []);
+
+  const toggleFilter = useCallback(() => {
+    setState((prev) => {
+      const next = prev.selectedKeys.length > 0 ? [] : [...NATURAL_KEYS];
+      saveSelectedKeys(next);
+      const pool = next.length > 0 ? next : [...ALL_KEYS];
+      return {
+        ...prev,
+        selectedKeys: next as Key[],
+        key: pickKeyFromPool(pool, prev.key),
+      };
+    });
+  }, []);
+
+  const { width: screenWidth } = useWindowDimensions();
+  const horizontalPadding = spacing.lg; // 24
+  const gap = spacing.sm; // 8
+  const cardWidth = Math.floor((screenWidth - horizontalPadding * 2 - gap * 3) / 4);
+
+  const { prog, key, selectedKeys } = state;
   const chordNames = resolveProgression(key, prog.numerals);
 
   return (
@@ -84,7 +141,7 @@ export default function HomeScreen() {
         {/* Header: logo centered, info button right */}
         <View style={styles.header}>
           <View style={styles.headerSpacer} />
-          <Text style={styles.logo}>🐨</Text>
+          <Image source={require('@/assets/images/logo.png')} style={styles.logo} />
           <View style={styles.headerRight}>
             <Link href="/about" asChild>
               <TouchableOpacity style={styles.infoBtn} activeOpacity={0.7}>
@@ -112,9 +169,9 @@ export default function HomeScreen() {
             const chord = findChord(name);
 
             return (
-              <View key={`${name}-${i}`} style={styles.chordCard}>
+              <View key={`${name}-${i}`} style={[styles.chordCard, { flexBasis: cardWidth }]}>
                 {chord ? (
-                  <ChordDiagram chord={chord} compact />
+                  <ChordDiagram chord={chord} width={cardWidth - spacing.xs * 2 - 3} />
                 ) : (
                   <View style={styles.missingChord}>
                     <Text style={styles.missingText}>{name}</Text>
@@ -134,19 +191,19 @@ export default function HomeScreen() {
       <View style={styles.bottomBar}>
         <Button
           label="Shuffle"
-          onPress={shuffleProgression}
+          onPress={shuffle}
           variant="primary"
           style={styles.shuffleBtn}
         />
 
         <View style={styles.keyBar}>
           {KEY_BAR_ITEMS.map((item) => {
-            const isActive = key === item.key;
+            const isActive = selectedKeys.includes(item.key);
             if (item.type === 'sharp') {
               return (
                 <TouchableOpacity
                   key={item.key}
-                  onPress={() => setKey(item.key)}
+                  onPress={() => toggleKey(item.key)}
                   activeOpacity={0.7}
                   style={[styles.keySharp, isActive && styles.keyItemActive]}
                 >
@@ -164,7 +221,7 @@ export default function HomeScreen() {
             return (
               <TouchableOpacity
                 key={item.key}
-                onPress={() => setKey(item.key)}
+                onPress={() => toggleKey(item.key)}
                 activeOpacity={0.7}
                 style={[styles.keyNatural, isActive && styles.keyItemActive]}
               >
@@ -181,11 +238,15 @@ export default function HomeScreen() {
           })}
           <View style={styles.keySeparator} />
           <TouchableOpacity
-            onPress={randomizeKey}
+            onPress={toggleFilter}
             activeOpacity={0.7}
             style={styles.keyRefresh}
           >
-            <Text style={styles.keyRefreshText}>?</Text>
+            <Ionicons
+              name={selectedKeys.length > 0 ? 'filter' : 'filter-outline'}
+              size={18}
+              color={colors.textMuted}
+            />
           </TouchableOpacity>
         </View>
       </View>
@@ -201,21 +262,21 @@ const styles = StyleSheet.create({
   },
   scroll: {
     padding: spacing.lg,
-    paddingTop: spacing.md,
+    paddingTop: spacing.lg,
     paddingBottom: spacing.md,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: spacing.sm,
+    marginBottom: spacing.lg,
   },
   headerSpacer: {
     width: 24,
   },
   logo: {
-    fontSize: 40,
-    textAlign: 'center',
+    width: 40,
+    height: 40,
   },
   headerRight: {
     width: 24,
@@ -239,7 +300,7 @@ const styles = StyleSheet.create({
     fontFamily: 'serif',
   },
   titleBlock: {
-    marginBottom: spacing.md,
+    marginBottom: spacing.lg,
   },
   titleTopRow: {
     flexDirection: 'row',
@@ -263,7 +324,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.primary,
     fontFamily: 'monospace',
-    marginTop: 2,
+    marginTop: spacing.xs,
   },
   chordRow: {
     flexDirection: 'row',
@@ -271,8 +332,8 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   chordCard: {
-    flexGrow: 1,
-    flexBasis: 70,
+    flexGrow: 0,
+    flexShrink: 0,
     alignItems: 'center',
     backgroundColor: colors.card,
     borderRadius: radii.md,
@@ -286,15 +347,14 @@ const styles = StyleSheet.create({
     height: 3,
     borderRadius: 1.5,
     alignSelf: 'stretch',
-    marginTop: spacing.xs,
-    marginBottom: spacing.xs,
+    marginTop: spacing.sm,
   },
   numeralBadge: {
     backgroundColor: colors.bg,
     borderRadius: radii.full,
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
-    marginTop: spacing.xs,
+    marginTop: spacing.sm,
   },
   chordNumeral: {
     fontSize: 11,
@@ -380,11 +440,5 @@ const styles = StyleSheet.create({
     borderRadius: radii.full,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  keyRefreshText: {
-    fontSize: 16,
-    fontWeight: '800',
-    color: colors.textMuted,
-    fontFamily: 'monospace',
   },
 });

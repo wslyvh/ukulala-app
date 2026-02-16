@@ -66,55 +66,77 @@ export const progressions: ProgressionData[] = [
     genre: 'Pop',
     description: 'An upbeat feel with a minor-flavored descent back to the tonic.',
   },
+  {
+    id: 'sensitive-female',
+    name: 'Sensitive',
+    numerals: ['vi', 'IV', 'I', 'V'],
+    genre: 'Pop',
+    description: 'The 2000s hit machine. Emotional and instantly recognizable.',
+  },
+  {
+    id: 'axis-rotation',
+    name: 'Axis Rotation',
+    numerals: ['vi', 'IV', 'V', 'I'],
+    genre: 'Pop',
+    description: 'A vi-start rotation. Builds tension before resolving home.',
+  },
+  {
+    id: 'royal-road',
+    name: 'Royal Road',
+    numerals: ['IV', 'V', 'iii', 'vi'],
+    genre: 'Pop',
+    description: 'The "Royal Road" progression — a cornerstone of Japanese pop and anime music.',
+  },
 
-  // --- Alternative ---
+  // --- Rock ---
+  {
+    id: 'rock-majors',
+    name: 'Rock Majors',
+    numerals: ['I', 'IV', 'V'],
+    genre: 'Rock',
+    description: 'The essential three-chord rock foundation.',
+  },
+  {
+    id: 'rock-majors-rotation',
+    name: 'Rock Majors Rotation',
+    numerals: ['V', 'IV', 'I'],
+    genre: 'Rock',
+    description: 'Reversed rock cadence. Resolves downward to the tonic.',
+  },
+  {
+    id: 'rock-n-roll',
+    name: "Rock 'n Roll",
+    numerals: ['I', 'IV', 'V', 'I'],
+    genre: 'Rock',
+    description: 'The classic rock and roll loop with a satisfying resolution.',
+  },
   {
     id: 'creep',
     name: 'Creep',
     numerals: ['I', 'iii', 'IV', 'I'],
-    genre: 'Alternative',
+    genre: 'Rock',
     description: 'Made famous by Radiohead. A haunting, tension-filled loop.',
   },
   {
     id: 'wonderwall',
-    name: 'Wonderwall Progression',
+    name: 'Wonderwall',
     numerals: ['I', 'iii', 'vii°', 'IV'],
-    genre: 'Britpop',
+    genre: 'Rock',
     description: 'The signature Oasis sound. Moody and anthemic.',
   },
-
-  // --- Folk ---
   {
-    id: 'sweet-cheerful',
-    name: "Sweet 'n Cheerful",
+    id: 'punk-drive',
+    name: 'Punk Drive',
+    numerals: ['I', 'V', 'IV', 'V'],
+    genre: 'Rock',
+    description: 'Fast and raw. Three chords and the truth.',
+  },
+  {
+    id: 'punk-anthem',
+    name: 'Punk Anthem',
     numerals: ['I', 'IV', 'V', 'IV'],
-    genre: 'Folk',
-    description: 'A bright, uplifting campfire-style progression.',
-  },
-
-  // --- Oldies ---
-  {
-    id: 'happy-days',
-    name: 'Happy Days - 50s',
-    numerals: ['I', 'vi', 'IV', 'V'],
-    genre: 'Oldies',
-    description: 'Classic 1950s doo-wop progression. Pure nostalgia.',
-  },
-
-  // --- Jazz ---
-  {
-    id: 'jazz-turnaround',
-    name: 'Jazz Turnaround',
-    numerals: ['ii', 'V', 'I', 'vi'],
-    genre: 'Jazz',
-    description: 'Standard jazz turnaround starting with the classic ii-V resolution.',
-  },
-  {
-    id: 'jazz-progression',
-    name: 'Jazz Progression',
-    numerals: ['ii', 'V', 'I', 'IV'],
-    genre: 'Jazz',
-    description: 'Extended ii-V-I resolving onward to the subdominant.',
+    genre: 'Rock',
+    description: 'High-energy anthem loop. Play it loud and fast.',
   },
 
   // --- Blues ---
@@ -147,61 +169,231 @@ export const progressions: ProgressionData[] = [
     description: 'The quintessential blues form. Twelve bars of pure soul.',
   },
 
-  // --- Rock ---
+  // --- Jazz ---
   {
-    id: 'rock-majors',
-    name: 'Rock Majors',
-    numerals: ['I', 'IV', 'V'],
-    genre: 'Rock',
-    description: 'The essential three-chord rock foundation.',
+    id: 'jazz-turnaround',
+    name: 'Jazz Turnaround',
+    numerals: ['ii', 'V', 'I', 'vi'],
+    genre: 'Jazz',
+    description: 'Standard jazz turnaround starting with the classic ii-V resolution.',
   },
   {
-    id: 'rock-majors-rotation',
-    name: 'Rock Majors Rotation',
-    numerals: ['V', 'IV', 'I'],
-    genre: 'Rock',
-    description: 'Reversed rock cadence. Resolves downward to the tonic.',
+    id: 'jazz-progression',
+    name: 'Jazz Progression',
+    numerals: ['ii', 'V', 'I', 'IV'],
+    genre: 'Jazz',
+    description: 'Extended ii-V-I resolving onward to the subdominant.',
   },
   {
-    id: 'rock-n-roll',
-    name: "Rock 'n Roll",
-    numerals: ['I', 'IV', 'V', 'I'],
-    genre: 'Rock',
-    description: 'The classic rock and roll loop with a satisfying resolution.',
+    id: 'jazz-ii-v-i',
+    name: 'Jazz ii-V-I',
+    numerals: ['ii7', 'V7', 'I', 'I'],
+    genre: 'Jazz',
+    description: 'The most fundamental jazz cadence with 7th chords.',
+  },
+  {
+    id: 'bossa-nova',
+    name: 'Bossa Nova',
+    numerals: ['I', 'vi7', 'ii7', 'V7'],
+    genre: 'Jazz',
+    description: 'Smooth Brazilian bossa nova with lush 7th chords.',
+  },
+  {
+    id: 'bossa-turnaround',
+    name: 'Bossa Turnaround',
+    numerals: ['ii7', 'V7', 'I', 'vi7'],
+    genre: 'Jazz',
+    description: 'Jazz-influenced bossa turnaround. Sophisticated and silky.',
   },
 
-  // --- Flamenco ---
+  // --- Classics ---
+  {
+    id: 'happy-days',
+    name: 'Happy Days - 50s',
+    numerals: ['I', 'vi', 'IV', 'V'],
+    genre: 'Classics',
+    description: 'Classic 1950s doo-wop progression. Pure nostalgia.',
+  },
+  {
+    id: 'motown',
+    name: 'Motown',
+    numerals: ['I', 'I7', 'IV', 'IV7'],
+    genre: 'Classics',
+    description: 'Classic Motown color with dominant 7ths. Smooth and groovy.',
+  },
+  {
+    id: 'soul-ballad',
+    name: 'Soul Ballad',
+    numerals: ['I', 'vi', 'IV', 'V'],
+    genre: 'Classics',
+    description: 'Timeless soul ballad form. Heart and Soul, Stand By Me.',
+  },
   {
     id: 'andalusian-cadence',
     name: 'Andalusian Cadence',
     numerals: ['vi', 'V', 'IV', 'iii'],
-    genre: 'Flamenco',
+    genre: 'Classics',
     description: 'Iconic descending progression from Spanish and flamenco music.',
   },
   {
     id: 'andalusian-cadence-major',
     name: 'Andalusian Cadence (Major)',
     numerals: ['I', 'vii°', 'vi', 'V'],
-    genre: 'Flamenco',
+    genre: 'Classics',
     description: 'Major-key variant of the Andalusian descent.',
   },
-
-  // --- Classical ---
   {
     id: 'canon-in-d',
     name: 'Canon in D',
     numerals: ['I', 'V', 'vi', 'iii'],
-    genre: 'Classical',
+    genre: 'Classics',
     description: "From Pachelbel's Canon. Elegant and timeless.",
   },
-
-  // --- J-Pop ---
   {
-    id: 'royal-road',
-    name: 'Royal Road',
-    numerals: ['IV', 'V', 'iii', 'vi'],
-    genre: 'J-Pop',
-    description: 'The "Royal Road" progression — a cornerstone of Japanese pop and anime music.',
+    id: 'doo-wop-minor',
+    name: 'Doo-Wop Minor',
+    numerals: ['vi', 'IV', 'I', 'V'],
+    genre: 'Classics',
+    description: 'The emotional minor doo-wop sound. Earth Angel vibes.',
+  },
+
+  // --- Folk & Country ---
+  {
+    id: 'sweet-cheerful',
+    name: "Sweet 'n Cheerful",
+    numerals: ['I', 'IV', 'V', 'IV'],
+    genre: 'Folk & Country',
+    description: 'A bright, uplifting campfire-style progression.',
+  },
+  {
+    id: 'country-roads',
+    name: 'Country Roads',
+    numerals: ['I', 'V', 'vi', 'IV'],
+    genre: 'Folk & Country',
+    description: 'The backbone of country music. Open road sing-along.',
+  },
+  {
+    id: 'country-waltz',
+    name: 'Country Waltz',
+    numerals: ['I', 'IV', 'V', 'I'],
+    genre: 'Folk & Country',
+    description: 'Simple country waltz. Front porch picking.',
+  },
+  {
+    id: 'freight-train',
+    name: 'Freight Train',
+    numerals: ['I', 'V', 'I', 'IV'],
+    genre: 'Folk & Country',
+    description: 'Rolling fingerpicking pattern. A folk standard.',
+  },
+  {
+    id: 'bluegrass-run',
+    name: 'Bluegrass Run',
+    numerals: ['I', 'IV', 'V', 'V'],
+    genre: 'Folk & Country',
+    description: 'Fast flatpicking energy. Keep your fingers moving.',
+  },
+
+  // --- Island ---
+  {
+    id: 'hawaiian-vamp',
+    name: 'Hawaiian Vamp',
+    numerals: ['I', 'IV', 'V', 'I'],
+    genre: 'Island',
+    description: 'The quintessential Hawaiian turnaround. Warm and sunny.',
+  },
+  {
+    id: 'hawaiian-slack-key',
+    name: 'Slack Key',
+    numerals: ['I', 'V', 'IV', 'I'],
+    genre: 'Island',
+    description: 'Inspired by slack-key guitar traditions. Simple and sweet.',
+  },
+  {
+    id: 'hawaiian-hula',
+    name: 'Hula',
+    numerals: ['I', 'IV', 'I', 'IV'],
+    genre: 'Island',
+    description: 'Gentle two-chord hula sway. Hypnotic and relaxing.',
+  },
+  {
+    id: 'hawaiian-breeze',
+    name: 'Island Breeze',
+    numerals: ['I', 'vi', 'IV', 'V'],
+    genre: 'Island',
+    description: 'A breezy island progression with a touch of longing.',
+  },
+  {
+    id: 'island-strum',
+    name: 'Island Strum',
+    numerals: ['I', 'V', 'vi', 'IV'],
+    genre: 'Island',
+    description: 'The island take on the four-chord anthem. Feels like a beach sunset.',
+  },
+  {
+    id: 'island-lullaby',
+    name: 'Island Lullaby',
+    numerals: ['I', 'iii', 'IV', 'V'],
+    genre: 'Island',
+    description: 'Soft and dreamy. Perfect for swaying under palm trees.',
+  },
+  {
+    id: 'island-serenade',
+    name: 'Island Serenade',
+    numerals: ['I', 'vi', 'ii', 'V'],
+    genre: 'Island',
+    description: 'A romantic island serenade with circle-of-fifths movement.',
+  },
+  {
+    id: 'reggae-drop',
+    name: 'Reggae Drop',
+    numerals: ['I', 'IV', 'V', 'IV'],
+    genre: 'Island',
+    description: 'Classic reggae strum pattern. Laid-back island groove.',
+  },
+  {
+    id: 'reggae-one-drop',
+    name: 'One Drop',
+    numerals: ['I', 'IV', 'I', 'V'],
+    genre: 'Island',
+    description: 'Roots reggae feel with emphasis on the off-beat.',
+  },
+  {
+    id: 'reggae-skanking',
+    name: 'Skanking',
+    numerals: ['I', 'vi', 'IV', 'V'],
+    genre: 'Island',
+    description: 'Upbeat ska-influenced reggae progression.',
+  },
+
+  // --- Latin ---
+  {
+    id: 'la-bamba',
+    name: 'La Bamba',
+    numerals: ['I', 'IV', 'V', 'V'],
+    genre: 'Latin',
+    description: 'The iconic La Bamba loop. Infectious and danceable.',
+  },
+  {
+    id: 'latin-son',
+    name: 'Son Cubano',
+    numerals: ['I', 'IV', 'V', 'I'],
+    genre: 'Latin',
+    description: 'Foundation of Cuban son music. Warm and rhythmic.',
+  },
+  {
+    id: 'latin-bolero',
+    name: 'Bolero',
+    numerals: ['I', 'IV', 'V7', 'I'],
+    genre: 'Latin',
+    description: 'Romantic Latin bolero. Slow and passionate.',
+  },
+  {
+    id: 'latin-cumbia',
+    name: 'Cumbia',
+    numerals: ['I', 'V', 'V', 'I'],
+    genre: 'Latin',
+    description: 'Colombian cumbia groove. Simple and infectious.',
   },
 ];
 

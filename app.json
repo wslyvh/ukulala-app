@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "ukulala-app",
+    "name": "Ukulala",
     "slug": "ukulala-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -15,7 +15,7 @@
     "android": {
       "package": "com.wslyvh.ukulala.app",
       "adaptiveIcon": {
-        "backgroundColor": "#fdf3e4",
+        "backgroundColor": "#efdfbf",
         "foregroundImage": "./assets/images/android-icon-foreground.png"
       },
       "edgeToEdgeEnabled": true,
@@ -33,7 +33,7 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#fdf3e4"
+          "backgroundColor": "#efdfbf"
         }
       ]
     ],

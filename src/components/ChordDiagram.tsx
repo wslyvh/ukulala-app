@@ -4,16 +4,34 @@ import { colors, spacing, radii } from '../theme';
 
 type Props = {
   chord: ChordData;
-  /** Compact mode for inline lists */
+  /** Compact mode: hides finger numbers */
   compact?: boolean;
+  /** When provided, all dimensions scale proportionally from this width */
+  width?: number;
 };
 
 const STRINGS = 4;
 const FRETS_SHOWN = 4;
 
-export function ChordDiagram({ chord, compact = false }: Props) {
-  const size = compact ? 'sm' : 'md';
-  const s = sizes[size];
+function scaleFromWidth(w: number) {
+  // All ratios derived from the md preset (base width = 100)
+  return {
+    width: w,
+    nameFontSize: w * 0.18,
+    openRowHeight: w * 0.22,
+    openDotSize: w * 0.14,
+    gridWidth: w * 0.84,
+    cellWidth: w * 0.21,
+    fretHeight: w * 0.28,
+    dotSize: w * 0.18,
+    fingerFontSize: w * 0.10,
+  };
+}
+
+export function ChordDiagram({ chord, compact = false, width }: Props) {
+  const s = width
+    ? scaleFromWidth(width)
+    : { ...sizes[compact ? 'sm' : 'md'], fingerFontSize: 10 };
 
   const minFret = Math.min(...chord.frets.filter((f) => f > 0));
   const maxFret = Math.max(...chord.frets);
@@ -28,33 +46,36 @@ export function ChordDiagram({ chord, compact = false }: Props) {
         {chord.name}
       </Text>
 
-      {/* Fret position indicator */}
-      {!isFirstPosition && (
-        <Text style={[styles.fretLabel, { left: -s.fretLabelOffset, top: s.fretLabelTop }]}>
-          {startFret}fr
-        </Text>
-      )}
-
       <View style={{ position: 'relative' }}>
-        {/* Open/muted string indicators above nut */}
-        <View style={[styles.openRow, { height: s.openRowHeight }]}>
-          {chord.frets.map((fret, i) => (
-            <View key={i} style={[styles.openCell, { width: s.cellWidth }]}>
-              {fret === 0 && (
-                <Text style={[styles.openDot, { fontSize: s.openDotSize }]}>o</Text>
-              )}
-              {fret === -1 && (
-                <Text style={[styles.mutedDot, { fontSize: s.openDotSize }]}>x</Text>
-              )}
+        {isFirstPosition ? (
+          <>
+            {/* Open/muted string indicators above nut */}
+            <View style={[styles.openRow, { height: s.openRowHeight }]}>
+              {chord.frets.map((fret, i) => (
+                <View key={i} style={[styles.openCell, { width: s.cellWidth }]}>
+                  {fret === 0 && (
+                    <Text style={[styles.openDot, { fontSize: s.openDotSize }]}>o</Text>
+                  )}
+                  {fret === -1 && (
+                    <Text style={[styles.mutedDot, { fontSize: s.openDotSize }]}>x</Text>
+                  )}
+                </View>
+              ))}
             </View>
-          ))}
-        </View>
-
-        {/* Nut (thick top line) */}
-        {isFirstPosition && <View style={[styles.nut, { width: s.gridWidth }]} />}
+            {/* Nut (thick top line) */}
+            <View style={[styles.nut, { width: s.gridWidth }]} />
+          </>
+        ) : (
+          /* Fret position indicator centered above grid */
+          <View style={[styles.fretLabelRow, { height: s.openRowHeight }]}>
+            <Text style={[styles.fretLabel, { fontSize: s.openDotSize }]}>
+              {startFret}fr
+            </Text>
+          </View>
+        )}
 
         {/* Fretboard grid */}
-        <View style={[styles.grid, { width: s.gridWidth }]}>
+        <View style={[styles.grid, { width: s.gridWidth }, !isFirstPosition && { marginTop: 3 }]}>
           {Array.from({ length: FRETS_SHOWN }).map((_, fretIdx) => (
             <View
               key={fretIdx}
@@ -100,7 +121,7 @@ export function ChordDiagram({ chord, compact = false }: Props) {
                       ]}
                     >
                       {!compact && chord.fingers[strIdx] > 0 && (
-                        <Text style={styles.fingerText}>
+                        <Text style={[styles.fingerText, { fontSize: s.fingerFontSize }]}>
                           {chord.fingers[strIdx]}
                         </Text>
                       )}
@@ -156,11 +177,14 @@ const styles = StyleSheet.create({
     marginBottom: 2,
     fontFamily: 'monospace',
   },
+  fretLabelRow: {
+    justifyContent: 'flex-end',
+    alignItems: 'flex-start',
+  },
   fretLabel: {
-    position: 'absolute',
-    fontSize: 10,
     color: colors.textMuted,
     fontFamily: 'monospace',
+    fontWeight: '700',
   },
   openRow: {
     flexDirection: 'row',
