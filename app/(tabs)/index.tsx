@@ -3,7 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet, useWindowDimensio
 import { Link } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { ScreenView, Button } from '@/src/ui';
-import { ChordDiagram } from '@/src/components/ChordDiagram';
+import { ZoomableChordDiagram } from '@/src/components/ZoomableChordDiagram';
 import { progressions } from '@/src/data/progressions';
 import { findChord } from '@/src/data/chords';
 import {
@@ -171,7 +171,12 @@ export default function HomeScreen() {
             return (
               <View key={`${name}-${i}`} style={[styles.chordCard, { flexBasis: cardWidth }]}>
                 {chord ? (
-                  <ChordDiagram chord={chord} width={cardWidth - spacing.xs * 2 - 3} />
+                  <ZoomableChordDiagram
+                    chord={chord}
+                    width={cardWidth - spacing.xs * 2 - 3}
+                    numeral={numeral}
+                    degreeColor={borderColor}
+                  />
                 ) : (
                   <View style={styles.missingChord}>
                     <Text style={styles.missingText}>{name}</Text>
