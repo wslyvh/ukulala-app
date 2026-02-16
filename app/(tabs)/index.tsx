@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, useWindowDimensions, Image } from 'react-native';
-import { Link } from 'expo-router';
+import { Link, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { ScreenView, Button } from '@/src/ui';
 import { ZoomableChordDiagram } from '@/src/components/ZoomableChordDiagram';
 import { progressions } from '@/src/data/progressions';
-import { findChord } from '@/src/data/chords';
+import { findChord, applyVoicing } from '@/src/data/chords';
 import {
   ALL_KEYS,
   NATURAL_KEYS,
@@ -14,7 +14,8 @@ import {
   pickRandom,
 } from '@/src/utils/music';
 import type { Key } from '@/src/utils/music';
-import { loadSelectedKeys, saveSelectedKeys } from '@/src/storage';
+import { loadSelectedKeys, saveSelectedKeys, loadVoicingPrefs } from '@/src/storage';
+import type { VoicingPrefs } from '@/src/storage';
 import { colors, spacing, radii } from '@/src/theme';
 
 const DEGREE_COLORS: Record<number, string> = {
@@ -64,6 +65,7 @@ function getInitialState() {
 
 export default function HomeScreen() {
   const [state, setState] = useState(getInitialState);
+  const [voicingPrefs, setVoicingPrefs] = useState<VoicingPrefs>({});
 
   useEffect(() => {
     loadSelectedKeys().then((stored) => {
@@ -76,6 +78,10 @@ export default function HomeScreen() {
       }
     });
   }, []);
+
+  useFocusEffect(useCallback(() => {
+    loadVoicingPrefs().then(setVoicingPrefs);
+  }, []));
 
   const shuffle = useCallback(() => {
     setState((prev) => {
@@ -166,7 +172,8 @@ export default function HomeScreen() {
             const numeral = prog.numerals[i];
             const degree = numeralDegree(numeral);
             const borderColor = DEGREE_COLORS[degree];
-            const chord = findChord(name);
+            const rawChord = findChord(name);
+            const chord = rawChord ? applyVoicing(rawChord, voicingPrefs[rawChord.name] ?? 0) : undefined;
 
             return (
               <View key={`${name}-${i}`} style={[styles.chordCard, { flexBasis: cardWidth }]}>

@@ -21,6 +21,12 @@ export type ChordCategory =
   | 'suspended'
   | 'other';
 
+export type ChordVoicing = {
+  frets: [number, number, number, number];
+  fingers: [number, number, number, number];
+  barFret?: number;
+};
+
 export type ChordData = {
   name: string;
   fullName: string;
@@ -28,6 +34,7 @@ export type ChordData = {
   frets: [number, number, number, number];
   fingers: [number, number, number, number];
   barFret?: number;
+  voicings?: ChordVoicing[];
 };
 
 export const CHORD_CATEGORIES: { key: ChordCategory; label: string }[] = [
@@ -42,12 +49,29 @@ export const CHORD_CATEGORIES: { key: ChordCategory; label: string }[] = [
 
 export const chords: ChordData[] = [
   // === MAJOR ===
-  { name: 'C', fullName: 'C Major', category: 'major', frets: [0, 0, 0, 3], fingers: [0, 0, 0, 3] },
-  { name: 'D', fullName: 'D Major', category: 'major', frets: [2, 2, 2, 0], fingers: [1, 1, 1, 0], barFret: 2 },
-  { name: 'E', fullName: 'E Major', category: 'major', frets: [1, 4, 0, 2], fingers: [1, 4, 0, 2] },
-  { name: 'F', fullName: 'F Major', category: 'major', frets: [2, 0, 1, 0], fingers: [2, 0, 1, 0] },
-  { name: 'G', fullName: 'G Major', category: 'major', frets: [0, 2, 3, 2], fingers: [0, 1, 3, 2] },
-  { name: 'A', fullName: 'A Major', category: 'major', frets: [2, 1, 0, 0], fingers: [2, 1, 0, 0] },
+  { name: 'C', fullName: 'C Major', category: 'major', frets: [0, 0, 0, 3], fingers: [0, 0, 0, 3], voicings: [
+    { frets: [5, 4, 3, 3], fingers: [3, 2, 1, 1], barFret: 3 },
+    { frets: [0, 4, 3, 3], fingers: [0, 3, 1, 2] },
+  ] },
+  { name: 'D', fullName: 'D Major', category: 'major', frets: [2, 2, 2, 0], fingers: [1, 1, 1, 0], barFret: 2, voicings: [
+    { frets: [2, 2, 2, 5], fingers: [1, 1, 1, 4], barFret: 2 },
+    { frets: [7, 6, 5, 5], fingers: [3, 2, 1, 1], barFret: 5 },
+  ] },
+  { name: 'E', fullName: 'E Major', category: 'major', frets: [1, 4, 0, 2], fingers: [1, 4, 0, 2], voicings: [
+    { frets: [4, 4, 4, 2], fingers: [2, 3, 4, 1] },
+  ] },
+  { name: 'F', fullName: 'F Major', category: 'major', frets: [2, 0, 1, 0], fingers: [2, 0, 1, 0], voicings: [
+    { frets: [5, 5, 5, 3], fingers: [2, 3, 4, 1] },
+    { frets: [2, 0, 1, 3], fingers: [2, 0, 1, 4] },
+  ] },
+  { name: 'G', fullName: 'G Major', category: 'major', frets: [0, 2, 3, 2], fingers: [0, 1, 3, 2], voicings: [
+    { frets: [4, 2, 3, 2], fingers: [3, 1, 2, 1], barFret: 2 },
+    { frets: [0, 2, 3, 5], fingers: [0, 1, 2, 4] },
+  ] },
+  { name: 'A', fullName: 'A Major', category: 'major', frets: [2, 1, 0, 0], fingers: [2, 1, 0, 0], voicings: [
+    { frets: [2, 1, 0, 4], fingers: [2, 1, 0, 4] },
+    { frets: [6, 5, 4, 4], fingers: [3, 2, 1, 1], barFret: 4 },
+  ] },
   { name: 'Bb', fullName: 'Bb Major', category: 'major', frets: [3, 2, 1, 1], fingers: [4, 3, 1, 1], barFret: 1 },
   { name: 'B', fullName: 'B Major', category: 'major', frets: [4, 3, 2, 2], fingers: [4, 3, 1, 1], barFret: 2 },
   { name: 'Db', fullName: 'Db Major', category: 'major', frets: [1, 1, 1, 4], fingers: [1, 1, 1, 4], barFret: 1 },
@@ -56,13 +80,29 @@ export const chords: ChordData[] = [
   { name: 'Ab', fullName: 'Ab Major', category: 'major', frets: [5, 3, 4, 3], fingers: [4, 1, 2, 1], barFret: 3 },
 
   // === MINOR ===
-  { name: 'Am', fullName: 'A Minor', category: 'minor', frets: [2, 0, 0, 0], fingers: [1, 0, 0, 0] },
-  { name: 'Bm', fullName: 'B Minor', category: 'minor', frets: [4, 2, 2, 2], fingers: [4, 1, 1, 1], barFret: 2 },
-  { name: 'Cm', fullName: 'C Minor', category: 'minor', frets: [0, 3, 3, 3], fingers: [0, 1, 2, 3] },
-  { name: 'Dm', fullName: 'D Minor', category: 'minor', frets: [2, 2, 1, 0], fingers: [2, 3, 1, 0] },
-  { name: 'Em', fullName: 'E Minor', category: 'minor', frets: [0, 4, 3, 2], fingers: [0, 3, 2, 1] },
-  { name: 'Fm', fullName: 'F Minor', category: 'minor', frets: [1, 0, 1, 3], fingers: [1, 0, 2, 4] },
-  { name: 'Gm', fullName: 'G Minor', category: 'minor', frets: [0, 2, 3, 1], fingers: [0, 2, 3, 1] },
+  { name: 'Am', fullName: 'A Minor', category: 'minor', frets: [2, 0, 0, 0], fingers: [1, 0, 0, 0], voicings: [
+    { frets: [2, 0, 0, 3], fingers: [1, 0, 0, 3] },
+    { frets: [5, 5, 4, 3], fingers: [3, 4, 2, 1] },
+  ] },
+  { name: 'Bm', fullName: 'B Minor', category: 'minor', frets: [4, 2, 2, 2], fingers: [4, 1, 1, 1], barFret: 2, voicings: [
+    { frets: [4, 2, 2, 5], fingers: [3, 1, 1, 4], barFret: 2 },
+  ] },
+  { name: 'Cm', fullName: 'C Minor', category: 'minor', frets: [0, 3, 3, 3], fingers: [0, 1, 2, 3], voicings: [
+    { frets: [5, 3, 3, 3], fingers: [4, 1, 1, 1], barFret: 3 },
+  ] },
+  { name: 'Dm', fullName: 'D Minor', category: 'minor', frets: [2, 2, 1, 0], fingers: [2, 3, 1, 0], voicings: [
+    { frets: [2, 2, 1, 3], fingers: [2, 3, 1, 4] },
+    { frets: [6, 5, 5, 5], fingers: [4, 1, 1, 1], barFret: 5 },
+  ] },
+  { name: 'Em', fullName: 'E Minor', category: 'minor', frets: [0, 4, 3, 2], fingers: [0, 3, 2, 1], voicings: [
+    { frets: [4, 4, 3, 2], fingers: [3, 4, 2, 1] },
+  ] },
+  { name: 'Fm', fullName: 'F Minor', category: 'minor', frets: [1, 0, 1, 3], fingers: [1, 0, 2, 4], voicings: [
+    { frets: [1, 0, 1, 0], fingers: [1, 0, 2, 0] },
+  ] },
+  { name: 'Gm', fullName: 'G Minor', category: 'minor', frets: [0, 2, 3, 1], fingers: [0, 2, 3, 1], voicings: [
+    { frets: [3, 2, 3, 1], fingers: [3, 2, 4, 1] },
+  ] },
   { name: 'Bbm', fullName: 'Bb Minor', category: 'minor', frets: [3, 1, 1, 1], fingers: [4, 1, 1, 1], barFret: 1 },
   { name: 'Dbm', fullName: 'Db Minor', category: 'minor', frets: [1, 1, 0, 4], fingers: [1, 2, 0, 4] },
   { name: 'Ebm', fullName: 'Eb Minor', category: 'minor', frets: [3, 3, 2, 1], fingers: [4, 3, 2, 1] },
@@ -132,4 +172,22 @@ export const chords: ChordData[] = [
 /** Lookup chord by name. Returns undefined if not found. */
 export function findChord(name: string): ChordData | undefined {
   return chords.find((c) => c.name === name);
+}
+
+/** Returns all voicings for a chord (default first, then alternatives). */
+export function getAllVoicings(chord: ChordData): ChordVoicing[] {
+  const defaultVoicing: ChordVoicing = {
+    frets: chord.frets,
+    fingers: chord.fingers,
+    ...(chord.barFret != null && { barFret: chord.barFret }),
+  };
+  return [defaultVoicing, ...(chord.voicings ?? [])];
+}
+
+/** Returns a chord with the preferred voicing applied. */
+export function applyVoicing(chord: ChordData, voicingIndex: number): ChordData {
+  if (voicingIndex === 0 || !chord.voicings) return chord;
+  const voicing = chord.voicings[voicingIndex - 1];
+  if (!voicing) return chord;
+  return { ...chord, frets: voicing.frets, fingers: voicing.fingers, barFret: voicing.barFret };
 }

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -9,8 +9,10 @@ import {
 } from 'react-native';
 import { ScreenView, Card, Chip } from '@/src/ui';
 import { ChordDiagram } from '@/src/components/ChordDiagram';
-import { chords, CHORD_CATEGORIES } from '@/src/data/chords';
+import { chords, CHORD_CATEGORIES, getAllVoicings } from '@/src/data/chords';
 import type { ChordCategory, ChordData } from '@/src/data/chords';
+import { loadVoicingPrefs, saveVoicingPrefs } from '@/src/storage';
+import type { VoicingPrefs } from '@/src/storage';
 import { colors, spacing, radii } from '@/src/theme';
 
 export default function ChordsScreen() {
@@ -19,6 +21,12 @@ export default function ChordsScreen() {
     null
   );
   const [selected, setSelected] = useState<ChordData | null>(null);
+  const [voicingIndex, setVoicingIndex] = useState(0);
+  const [voicingPrefs, setVoicingPrefs] = useState<VoicingPrefs>({});
+
+  useEffect(() => {
+    loadVoicingPrefs().then(setVoicingPrefs);
+  }, []);
 
   const filtered = useMemo(() => {
     let result = chords;
@@ -75,26 +83,76 @@ export default function ChordsScreen() {
       </View>
 
       {/* Selected chord detail */}
-      {selected && (
-        <Card style={styles.detailCard}>
-          <TouchableOpacity
-            onPress={() => setSelected(null)}
-            style={styles.closeBtn}
-          >
-            <Text style={styles.closeBtnText}>x</Text>
-          </TouchableOpacity>
-          <View style={styles.detailContent}>
-            <ChordDiagram chord={selected} />
-            <View style={styles.detailInfo}>
-              <Text style={styles.detailName}>{selected.fullName}</Text>
-              <Text style={styles.detailCategory}>{selected.category}</Text>
-              <Text style={styles.detailFrets}>
-                Frets: {selected.frets.join(' ')}
-              </Text>
+      {selected && (() => {
+        const voicings = getAllVoicings(selected);
+        const activeVoicing = voicings[voicingIndex] ?? voicings[0];
+        const displayChord: ChordData = {
+          ...selected,
+          frets: activeVoicing.frets,
+          fingers: activeVoicing.fingers,
+          barFret: activeVoicing.barFret,
+        };
+        const hasMultiple = voicings.length > 1;
+        const isPreferred = voicingPrefs[selected.name] === voicingIndex;
+        const togglePreferred = () => {
+          const next = { ...voicingPrefs };
+          if (isPreferred) {
+            delete next[selected.name];
+          } else {
+            next[selected.name] = voicingIndex;
+          }
+          setVoicingPrefs(next);
+          saveVoicingPrefs(next);
+        };
+        return (
+          <Card style={styles.detailCard}>
+            <TouchableOpacity
+              onPress={() => { setSelected(null); setVoicingIndex(0); }}
+              style={styles.closeBtn}
+            >
+              <Text style={styles.closeBtnText}>x</Text>
+            </TouchableOpacity>
+            <View style={styles.detailContent}>
+              <ChordDiagram chord={displayChord} />
+              <View style={styles.detailInfo}>
+                <View style={styles.detailNameRow}>
+                  <Text style={styles.detailName}>{selected.fullName}</Text>
+                  {hasMultiple && (
+                    <TouchableOpacity onPress={togglePreferred} style={styles.starBtn}>
+                      <Text style={[styles.starText, isPreferred && styles.starActive]}>
+                        {isPreferred ? '\u2605' : '\u2606'}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+                <Text style={styles.detailCategory}>{selected.category}</Text>
+                <Text style={styles.detailFrets}>
+                  Frets: {activeVoicing.frets.join(' ')}
+                </Text>
+                {hasMultiple && (
+                  <View style={styles.voicingNav}>
+                    <TouchableOpacity
+                      onPress={() => setVoicingIndex((voicingIndex - 1 + voicings.length) % voicings.length)}
+                      style={styles.voicingArrow}
+                    >
+                      <Text style={styles.voicingArrowText}>‹</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.voicingIndicator}>
+                      {voicingIndex + 1} of {voicings.length}
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() => setVoicingIndex((voicingIndex + 1) % voicings.length)}
+                      style={styles.voicingArrow}
+                    >
+                      <Text style={styles.voicingArrowText}>›</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
             </View>
-          </View>
-        </Card>
-      )}
+          </Card>
+        );
+      })()}
 
       {/* Chord grid */}
       <FlatList
@@ -109,9 +167,14 @@ export default function ChordsScreen() {
               styles.gridItem,
               selected?.name === item.name && styles.gridItemActive,
             ]}
-            onPress={() =>
-              setSelected(selected?.name === item.name ? null : item)
-            }
+            onPress={() => {
+              if (selected?.name === item.name) {
+                setSelected(null);
+              } else {
+                setSelected(item);
+                setVoicingIndex(voicingPrefs[item.name] ?? 0);
+              }
+            }}
             activeOpacity={0.7}
           >
             <ChordDiagram chord={item} compact />
@@ -182,6 +245,11 @@ const styles = StyleSheet.create({
   detailInfo: {
     flex: 1,
   },
+  detailNameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
   detailName: {
     fontSize: 18,
     fontWeight: '800',
@@ -200,6 +268,46 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     fontFamily: 'monospace',
     marginTop: spacing.xs,
+  },
+  voicingNav: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: spacing.sm,
+    gap: spacing.sm,
+  },
+  voicingArrow: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.surface,
+    borderRadius: radii.sm,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  voicingArrowText: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: colors.text,
+    fontFamily: 'monospace',
+  },
+  starBtn: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  starText: {
+    fontSize: 22,
+    color: colors.textMuted,
+  },
+  starActive: {
+    color: colors.primary,
+  },
+  voicingIndicator: {
+    fontSize: 12,
+    color: colors.textLight,
+    fontFamily: 'monospace',
   },
   list: {
     paddingHorizontal: spacing.md,
