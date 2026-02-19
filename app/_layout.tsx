@@ -1,13 +1,19 @@
+import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { trackPageview } from '@/src/analytics';
+import { incrementSession } from '@/src/review';
 
 export const unstable_settings = {
   anchor: '(tabs)',
 };
 
 export default function RootLayout() {
+  useEffect(() => {
+    incrementSession();
+  }, []);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Stack

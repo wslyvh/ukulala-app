@@ -1,12 +1,22 @@
-import { View, Text, ScrollView, TouchableOpacity, Linking, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router';
-import { ScreenView } from '@/src/ui';
-import { colors, spacing, radii } from '@/src/theme';
+import { trackEvent } from "@/src/analytics";
+import { requestReview } from "@/src/review";
+import { colors, radii, spacing } from "@/src/theme";
+import { ScreenView } from "@/src/ui";
+import { useRouter } from "expo-router";
+import {
+  Image,
+  Linking,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 const LINKS = [
-  { label: 'Website', url: 'https://www.ukulalala.com' },
-  { label: 'GitHub', url: 'https://github.com/wslyvh/ukulala-app' },
-  { label: 'Twitter', url: 'https://x.com/wslyvh' },
+  { label: "Website", url: "https://www.ukulalala.com" },
+  { label: "GitHub", url: "https://github.com/wslyvh/ukulala-app" },
+  { label: "Twitter", url: "https://x.com/wslyvh" },
 ] as const;
 
 export default function AboutScreen() {
@@ -18,7 +28,10 @@ export default function AboutScreen() {
         {/* Header: matches home screen layout exactly */}
         <View style={styles.header}>
           <View style={styles.headerSpacer} />
-          <Text style={styles.logo}>🐨</Text>
+          <Image
+            source={require("@/assets/images/logo.png")}
+            style={styles.logo}
+          />
           <View style={styles.headerRight}>
             <TouchableOpacity
               style={styles.actionBtn}
@@ -31,18 +44,17 @@ export default function AboutScreen() {
         </View>
 
         <Text style={styles.title}>Ukulala</Text>
-        <Text style={styles.tagline}>ukulele progression trainer</Text>
+        <Text style={styles.tagline}>Ukulele chords & progression trainer</Text>
 
         <View style={styles.divider} />
 
         <Text style={styles.body}>
-          A simple, open-source app to learn ukulele chords and practice
-          common chord progressions in any key.
+          A simple chord and progression trainer to explore your ukulele, get
+          inspiration and expand your chord vocabulary.
         </Text>
 
         <Text style={styles.body}>
-          Built with Expo and React Native. No accounts, no personal data —
-          just chords.
+          No accounts, no personal data — just music!
         </Text>
 
         <View style={styles.divider} />
@@ -57,18 +69,28 @@ export default function AboutScreen() {
             activeOpacity={0.7}
           >
             <Text style={styles.linkLabel}>{link.label}</Text>
-            <Text style={styles.linkUrl}>{link.url.replace('https://', '')}</Text>
+            <Text style={styles.linkUrl}>
+              {link.url.replace("https://", "")}
+            </Text>
           </TouchableOpacity>
         ))}
 
-        <View style={styles.divider} />
+        <TouchableOpacity
+          style={[styles.linkRow, { borderBottomWidth: 0 }]}
+          onPress={() => {
+            trackEvent("rate_app");
+            requestReview();
+          }}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.linkLabel}>Rate this app</Text>
+          <Text style={styles.rateStar}>★</Text>
+        </TouchableOpacity>
 
-        <Text style={styles.footer}>
-          Open-source under MIT license.
-        </Text>
-        <Text style={styles.footerMuted}>
-          Made with 🎵 by @wslyvh
-        </Text>
+        <View style={styles.footerContainer}>
+          <Text style={styles.footer}>Open-source under MIT license.</Text>
+          <Text style={styles.footerMuted}>Made with 🎵 by wslyvh</Text>
+        </View>
       </ScrollView>
     </ScreenView>
   );
@@ -80,21 +102,22 @@ const styles = StyleSheet.create({
     paddingTop: spacing.md,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: spacing.sm,
   },
   headerSpacer: {
     width: 24,
   },
   logo: {
-    fontSize: 40,
-    textAlign: 'center',
+    width: 48,
+    height: 48,
+    resizeMode: "contain",
   },
   headerRight: {
     width: 24,
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
   },
   actionBtn: {
     width: 24,
@@ -103,79 +126,87 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: colors.border,
     backgroundColor: colors.card,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   actionBtnText: {
     fontSize: 13,
-    fontWeight: '800',
+    fontWeight: "800",
     color: colors.textMuted,
-    fontFamily: 'monospace',
+    fontFamily: "monospace",
     marginTop: -1,
   },
   title: {
     fontSize: 32,
-    fontWeight: '900',
+    fontWeight: "900",
     color: colors.text,
-    fontFamily: 'monospace',
-    textAlign: 'center',
+    fontFamily: "monospace",
+    textAlign: "center",
   },
   tagline: {
     fontSize: 13,
     color: colors.textMuted,
-    textAlign: 'center',
-    fontFamily: 'monospace',
+    textAlign: "center",
+    fontFamily: "monospace",
     marginTop: spacing.xs,
   },
   divider: {
-    height: 1.5,
+    height: 1,
     backgroundColor: colors.border,
     marginVertical: spacing.lg,
   },
   body: {
     fontSize: 14,
     color: colors.text,
-    fontFamily: 'monospace',
+    fontFamily: "monospace",
     lineHeight: 22,
     marginBottom: spacing.sm,
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: '800',
+    fontWeight: "800",
     color: colors.text,
-    fontFamily: 'monospace',
+    fontFamily: "monospace",
     marginBottom: spacing.md,
   },
   linkRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingVertical: spacing.sm + 2,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
   linkLabel: {
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: "700",
     color: colors.text,
-    fontFamily: 'monospace',
+    fontFamily: "monospace",
   },
   linkUrl: {
     fontSize: 12,
+    color: colors.primaryContent,
+    fontFamily: "monospace",
+  },
+  rateStar: {
+    fontSize: 18,
+    lineHeight: 18,
     color: colors.primary,
-    fontFamily: 'monospace',
+  },
+  footerContainer: {
+    marginTop: spacing.lg,
   },
   footer: {
     fontSize: 13,
     color: colors.textMuted,
-    fontFamily: 'monospace',
-    textAlign: 'center',
+    fontFamily: "monospace",
+    textAlign: "center",
   },
   footerMuted: {
     fontSize: 12,
     color: colors.textLight,
-    fontFamily: 'monospace',
-    textAlign: 'center',
+    fontFamily: "monospace",
+    textAlign: "center",
     marginTop: spacing.xs,
   },
 });
