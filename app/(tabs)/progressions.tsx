@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -7,13 +7,16 @@ import {
   ScrollView,
   StyleSheet,
 } from 'react-native';
+import { useFocusEffect } from 'expo-router';
 import { ScreenView, Card, Chip, Button } from '@/src/ui';
 import { ChordDiagram } from '@/src/components/ChordDiagram';
 import { progressions, GENRES } from '@/src/data/progressions';
 import type { ProgressionData } from '@/src/data/progressions';
-import { findChord } from '@/src/data/chords';
+import { findChord, applyVoicing } from '@/src/data/chords';
 import { ALL_KEYS, resolveProgression } from '@/src/utils/music';
 import type { Key } from '@/src/utils/music';
+import { loadVoicingPrefs } from '@/src/storage';
+import type { VoicingPrefs } from '@/src/storage';
 import { colors, spacing, radii } from '@/src/theme';
 
 export default function ProgressionsScreen() {
@@ -22,6 +25,11 @@ export default function ProgressionsScreen() {
     null
   );
   const [selectedKey, setSelectedKey] = useState<Key>('C');
+  const [voicingPrefs, setVoicingPrefs] = useState<VoicingPrefs>({});
+
+  useFocusEffect(useCallback(() => {
+    loadVoicingPrefs().then(setVoicingPrefs);
+  }, []));
 
   const filtered = useMemo(() => {
     if (!activeGenre) return progressions;
@@ -115,14 +123,15 @@ export default function ProgressionsScreen() {
             contentContainerStyle={styles.chordScroll}
           >
             {resolvedChords.map((name, i) => {
-              const chord = findChord(name);
-              if (!chord) {
+              const rawChord = findChord(name);
+              if (!rawChord) {
                 return (
                   <View key={i} style={styles.missingChord}>
                     <Text style={styles.missingText}>{name}</Text>
                   </View>
                 );
               }
+              const chord = applyVoicing(rawChord, voicingPrefs[rawChord.name] ?? 0);
               return <ChordDiagram key={`${name}-${i}`} chord={chord} />;
             })}
           </ScrollView>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -7,9 +7,10 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
+import { useFocusEffect } from 'expo-router';
 import { ScreenView, Card, Chip } from '@/src/ui';
 import { ChordDiagram } from '@/src/components/ChordDiagram';
-import { chords, CHORD_CATEGORIES, getAllVoicings } from '@/src/data/chords';
+import { chords, CHORD_CATEGORIES, getAllVoicings, applyVoicing } from '@/src/data/chords';
 import type { ChordCategory, ChordData } from '@/src/data/chords';
 import { loadVoicingPrefs, saveVoicingPrefs } from '@/src/storage';
 import type { VoicingPrefs } from '@/src/storage';
@@ -24,9 +25,9 @@ export default function ChordsScreen() {
   const [voicingIndex, setVoicingIndex] = useState(0);
   const [voicingPrefs, setVoicingPrefs] = useState<VoicingPrefs>({});
 
-  useEffect(() => {
+  useFocusEffect(useCallback(() => {
     loadVoicingPrefs().then(setVoicingPrefs);
-  }, []);
+  }, []));
 
   const filtered = useMemo(() => {
     let result = chords;
@@ -177,7 +178,7 @@ export default function ChordsScreen() {
             }}
             activeOpacity={0.7}
           >
-            <ChordDiagram chord={item} compact />
+            <ChordDiagram chord={applyVoicing(item, voicingPrefs[item.name] ?? 0)} compact />
           </TouchableOpacity>
         )}
         ListEmptyComponent={
