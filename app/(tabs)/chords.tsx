@@ -9,12 +9,11 @@ import {
 } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { ScreenView, Card, Chip } from '@/src/ui';
-import { ChordDiagram } from '@/src/components/ChordDiagram';
+import { ZoomableChordDiagram } from '@/src/components/ZoomableChordDiagram';
 import { CHORD_CATEGORIES } from '@/src/data/chords';
 import type { ChordCategory, ChordData } from '@/src/data/chords';
 import { useTuning, useChordLookup } from '@/src/tuning';
 import { loadVoicingPrefs, saveVoicingPrefs } from '@/src/storage';
-import { trackEvent } from '@/src/analytics';
 import type { VoicingPrefs } from '@/src/storage';
 import { colors, spacing, radii } from '@/src/theme';
 
@@ -71,18 +70,18 @@ export default function ChordsScreen() {
           <Chip
             label="All"
             active={activeCategory === null}
-            onPress={() => setActiveCategory(null)}
+            onPress={() => { setActiveCategory(null); setSelected(null); setVoicingIndex(0); }}
           />
           {CHORD_CATEGORIES.map((cat) => (
             <Chip
               key={cat.key}
               label={cat.label}
               active={activeCategory === cat.key}
-              onPress={() =>
-                setActiveCategory(
-                  activeCategory === cat.key ? null : cat.key
-                )
-              }
+              onPress={() => {
+                setActiveCategory(activeCategory === cat.key ? null : cat.key);
+                setSelected(null);
+                setVoicingIndex(0);
+              }}
             />
           ))}
         </View>
@@ -119,7 +118,7 @@ export default function ChordsScreen() {
               <Text style={styles.closeBtnText}>x</Text>
             </TouchableOpacity>
             <View style={styles.detailContent}>
-              <ChordDiagram chord={displayChord} />
+              <ZoomableChordDiagram chord={displayChord} />
               <View style={styles.detailInfo}>
                 <View style={styles.detailNameRow}>
                   <Text style={styles.detailName}>{selected.fullName}</Text>
@@ -179,12 +178,11 @@ export default function ChordsScreen() {
               } else {
                 setSelected(item);
                 setVoicingIndex(voicingPrefs[item.name] ?? 0);
-                trackEvent('chord_view', { chord: item.name });
               }
             }}
             activeOpacity={0.7}
           >
-            <ChordDiagram chord={applyVoicing(item, voicingPrefs[item.name] ?? 0)} compact />
+            <ZoomableChordDiagram chord={applyVoicing(item, voicingPrefs[item.name] ?? 0)} compact />
           </TouchableOpacity>
         )}
         ListEmptyComponent={

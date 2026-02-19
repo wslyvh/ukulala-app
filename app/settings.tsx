@@ -1,9 +1,8 @@
-import { trackEvent } from "@/src/analytics";
 import { requestReview } from "@/src/review";
-import { colors, radii, spacing } from "@/src/theme";
-import { ScreenView } from "@/src/ui";
-import { useTuning } from "@/src/tuning";
 import type { Tuning } from "@/src/storage";
+import { colors, radii, spacing } from "@/src/theme";
+import { useTuning } from "@/src/tuning";
+import { ScreenView } from "@/src/ui";
 import { useRouter } from "expo-router";
 import {
   Image,
@@ -57,14 +56,27 @@ export default function SettingsScreen() {
           {TUNING_OPTIONS.map((opt) => (
             <TouchableOpacity
               key={opt.value}
-              style={[styles.tuningBtn, tuning === opt.value && styles.tuningBtnActive]}
+              style={[
+                styles.tuningBtn,
+                tuning === opt.value && styles.tuningBtnActive,
+              ]}
               onPress={() => setTuning(opt.value)}
               activeOpacity={0.7}
             >
-              <Text style={[styles.tuningLabel, tuning === opt.value && styles.tuningLabelActive]}>
+              <Text
+                style={[
+                  styles.tuningLabel,
+                  tuning === opt.value && styles.tuningLabelActive,
+                ]}
+              >
                 {opt.label}
               </Text>
-              <Text style={[styles.tuningHint, tuning === opt.value && styles.tuningHintActive]}>
+              <Text
+                style={[
+                  styles.tuningHint,
+                  tuning === opt.value && styles.tuningHintActive,
+                ]}
+              >
                 {opt.hint}
               </Text>
             </TouchableOpacity>
@@ -108,7 +120,6 @@ export default function SettingsScreen() {
         <TouchableOpacity
           style={[styles.linkRow, { borderBottomWidth: 0 }]}
           onPress={() => {
-            trackEvent("rate_app");
             requestReview();
           }}
           activeOpacity={0.7}

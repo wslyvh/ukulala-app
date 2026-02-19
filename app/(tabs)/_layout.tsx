@@ -2,7 +2,6 @@ import { Tabs } from 'expo-router';
 import { Text, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '@/src/theme';
-import { trackPageview } from '@/src/analytics';
 
 function TabIcon({ label, focused }: { label: string; focused: boolean }) {
   return (
@@ -16,12 +15,6 @@ export default function TabLayout() {
 
   return (
     <Tabs
-      screenListeners={{
-        focus: (e) => {
-          const name = e.target?.split('-')[0] ?? '';
-          trackPageview(name === 'index' ? '/home' : `/${name}`);
-        },
-      }}
       screenOptions={{
         headerShown: false,
         tabBarStyle: [styles.tabBar, { height: 54 + bottomPadding, paddingBottom: bottomPadding }],

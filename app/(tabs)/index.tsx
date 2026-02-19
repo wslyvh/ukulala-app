@@ -15,7 +15,6 @@ import {
 } from '@/src/utils/music';
 import type { Key } from '@/src/utils/music';
 import { loadSelectedKeys, saveSelectedKeys, loadVoicingPrefs, loadStarredProgs, saveStarredProgs } from '@/src/storage';
-import { trackEvent } from '@/src/analytics';
 import type { VoicingPrefs } from '@/src/storage';
 import { colors, spacing, radii } from '@/src/theme';
 
@@ -110,7 +109,6 @@ export default function HomeScreen() {
   }, []);
 
   const shuffle = useCallback(() => {
-    trackEvent('shuffle');
     setState((prev) => {
       const progPool =
         prev.starredOnly && starredProgs.length > 0

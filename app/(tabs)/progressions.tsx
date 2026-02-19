@@ -1,18 +1,13 @@
-import { trackEvent } from "@/src/analytics";
-import { ChordDiagram } from "@/src/components/ChordDiagram";
+import { ZoomableChordDiagram } from "@/src/components/ZoomableChordDiagram";
 import { useTuning, useChordLookup } from "@/src/tuning";
 import type { ProgressionData } from "@/src/data/progressions";
 import { GENRES, progressions } from "@/src/data/progressions";
 import type { VoicingPrefs } from "@/src/storage";
-import {
-  loadStarredProgs,
-  loadVoicingPrefs,
-  saveStarredProgs,
-} from "@/src/storage";
+import { loadStarredProgs, loadVoicingPrefs, saveStarredProgs } from "@/src/storage";
 import { colors, radii, spacing } from "@/src/theme";
-import { Card, Chip, ScreenView } from "@/src/ui";
+import { Chip, ScreenView } from "@/src/ui";
 import type { Key } from "@/src/utils/music";
-import { ALL_KEYS, resolveProgression } from "@/src/utils/music";
+import { ALL_KEYS, resolveProgression, numeralDegree } from "@/src/utils/music";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import {
@@ -22,15 +17,25 @@ import {
   Text,
   TouchableOpacity,
   View,
+  useWindowDimensions,
 } from "react-native";
+
+const DEGREE_COLORS: Record<number, string> = {
+  1: colors.degree1,
+  2: colors.degree2,
+  3: colors.degree3,
+  4: colors.degree4,
+  5: colors.degree5,
+  6: colors.degree6,
+  7: colors.degree7,
+};
 
 export default function ProgressionsScreen() {
   const { tuning } = useTuning();
   const { findChord, applyVoicing } = useChordLookup();
+  const { width: screenWidth } = useWindowDimensions();
   const [activeGenre, setActiveGenre] = useState<string | null>(null);
-  const [selectedProg, setSelectedProg] = useState<ProgressionData | null>(
-    null,
-  );
+  const [selectedProg, setSelectedProg] = useState<ProgressionData | null>(null);
   const [selectedKey, setSelectedKey] = useState<Key>("C");
   const [voicingPrefs, setVoicingPrefs] = useState<VoicingPrefs>({});
   const [starredProgs, setStarredProgs] = useState<string[]>([]);
@@ -40,22 +45,20 @@ export default function ProgressionsScreen() {
     useCallback(() => {
       loadVoicingPrefs(tuning).then(setVoicingPrefs);
       loadStarredProgs().then(setStarredProgs);
+      return () => { setSelectedProg(null); };
     }, [tuning]),
   );
 
   const toggleBookmark = useCallback((id: string) => {
     setStarredProgs((prev) => {
-      const next = prev.includes(id)
-        ? prev.filter((x) => x !== id)
-        : [...prev, id];
+      const next = prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id];
       saveStarredProgs(next);
       return next;
     });
   }, []);
 
   const filtered = useMemo(() => {
-    if (showSavedOnly)
-      return progressions.filter((p) => starredProgs.includes(p.id));
+    if (showSavedOnly) return progressions.filter((p) => starredProgs.includes(p.id));
     if (activeGenre) return progressions.filter((p) => p.genre === activeGenre);
     return progressions;
   }, [activeGenre, showSavedOnly, starredProgs]);
@@ -65,179 +68,143 @@ export default function ProgressionsScreen() {
     return resolveProgression(selectedKey, selectedProg.numerals);
   }, [selectedProg, selectedKey]);
 
-  return (
-    <ScreenView>
-      <View style={styles.header}>
-        <Text style={styles.title}>Progressions</Text>
+  // Inner content width of listItem (screen - item margins - item padding)
+  // Subtract 1 extra px so nested layout rounding never causes the 4th card to wrap
+  const innerWidth = screenWidth - spacing.lg * 2 - spacing.md * 2;
+  const cardWidth = Math.floor((innerWidth - spacing.xs * 3) / 4) - 1;
+  const diagramWidth = cardWidth - spacing.xs * 2 - 3;
 
-        {/* Genre filters */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.chipScroll}
+  const renderItem = useCallback(({ item }: { item: ProgressionData }) => {
+    const isExpanded = selectedProg?.id === item.id;
+    const isStarred = starredProgs.includes(item.id);
+    const chords = isExpanded ? resolvedChords : [];
+
+    return (
+      <View style={[styles.listItem, isExpanded && styles.listItemActive]}>
+        {/* Tappable header — always visible */}
+        <TouchableOpacity
+          onPress={() => {
+            const next = isExpanded ? null : item;
+            setSelectedProg(next);
+          }}
+          activeOpacity={0.7}
         >
-          <Chip
-            label="All"
-            active={activeGenre === null && !showSavedOnly}
-            onPress={() => {
-              setActiveGenre(null);
-              setShowSavedOnly(false);
-            }}
-          />
-          <Chip
-            label={showSavedOnly ? "\u2605" : "\u2606"}
-            active={showSavedOnly}
-            onPress={() => {
-              setShowSavedOnly((v) => !v);
-              setActiveGenre(null);
-            }}
-          />
-          {GENRES.map((genre) => (
-            <Chip
-              key={genre}
-              label={genre}
-              active={!showSavedOnly && activeGenre === genre}
-              onPress={() => {
-                setShowSavedOnly(false);
-                setActiveGenre(activeGenre === genre ? null : genre);
-              }}
-            />
-          ))}
-        </ScrollView>
-      </View>
-
-      {/* Expanded detail */}
-      {selectedProg && (
-        <Card style={styles.detailCard}>
-          <TouchableOpacity
-            onPress={() => setSelectedProg(null)}
-            style={styles.closeBtn}
-          >
-            <Text style={styles.closeBtnText}>x</Text>
-          </TouchableOpacity>
-
-          <View style={styles.detailNameRow}>
-            <Text style={styles.detailName}>{selectedProg.name}</Text>
-            <TouchableOpacity
-              onPress={() => toggleBookmark(selectedProg.id)}
-              style={styles.bookmarkBtn}
-              activeOpacity={0.7}
-            >
-              <Text
-                style={[
-                  styles.bookmarkText,
-                  starredProgs.includes(selectedProg.id) &&
-                    styles.bookmarkActive,
-                ]}
-              >
-                {starredProgs.includes(selectedProg.id) ? "\u2605" : "\u2606"}
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <Text style={styles.detailDesc}>{selectedProg.description}</Text>
-
-          {/* Key selector */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.keyScroll}
-            contentContainerStyle={styles.keyScrollContent}
-          >
-            {ALL_KEYS.map((k) => (
+          <View style={styles.listItemHeader}>
+            <View style={styles.listItemNameRow}>
+              <Text style={styles.listItemName}>{item.name}</Text>
               <TouchableOpacity
-                key={k}
-                onPress={() => setSelectedKey(k)}
-                style={[
-                  styles.keyBtn,
-                  selectedKey === k && styles.keyBtnActive,
-                ]}
+                onPress={() => toggleBookmark(item.id)}
+                style={styles.bookmarkBtn}
+                activeOpacity={0.7}
               >
-                <Text
-                  style={[
-                    styles.keyBtnText,
-                    selectedKey === k && styles.keyBtnTextActive,
-                  ]}
-                >
-                  {k}
+                <Text style={[styles.bookmarkText, isStarred && styles.bookmarkActive]}>
+                  {isStarred ? "\u2605" : "\u2606"}
                 </Text>
               </TouchableOpacity>
-            ))}
-          </ScrollView>
+            </View>
+            <Text style={styles.listItemGenre}>{item.genre}</Text>
+          </View>
+          {!isExpanded && (
+            <Text style={styles.listItemNumerals}>{item.numerals.join(" - ")}</Text>
+          )}
+        </TouchableOpacity>
 
-          {/* Numerals */}
-          <Text style={styles.numerals}>
-            {selectedProg.numerals.join(" - ")}
-          </Text>
+        {/* Accordion content */}
+        {isExpanded && (
+          <View style={styles.accordionContent}>
+            <Text style={styles.detailDesc}>{item.description}</Text>
 
-          {/* Chord diagrams */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.chordScroll}
-          >
-            {resolvedChords.map((name, i) => {
-              const rawChord = findChord(name);
-              if (!rawChord) {
+            {/* Key selector */}
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.keyScroll}
+              contentContainerStyle={styles.keyScrollContent}
+            >
+              {ALL_KEYS.map((k) => (
+                <TouchableOpacity
+                  key={k}
+                  onPress={() => setSelectedKey(k)}
+                  style={[styles.keyBtn, selectedKey === k && styles.keyBtnActive]}
+                >
+                  <Text style={[styles.keyBtnText, selectedKey === k && styles.keyBtnTextActive]}>
+                    {k}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+
+            {/* Chord grid — negative margin escapes listItem padding, matches home width */}
+            <View style={styles.chordRow}>
+              {chords.map((name, i) => {
+                const numeral = item.numerals[i];
+                const degreeColor = DEGREE_COLORS[numeralDegree(numeral)];
+                const rawChord = findChord(name);
+                if (!rawChord) {
+                  return (
+                    <View key={i} style={[styles.chordCard, { flexBasis: cardWidth }]}>
+                      <Text style={styles.missingText}>{name}</Text>
+                    </View>
+                  );
+                }
+                const chord = applyVoicing(rawChord, voicingPrefs[rawChord.name] ?? 0);
                 return (
-                  <View key={i} style={styles.missingChord}>
-                    <Text style={styles.missingText}>{name}</Text>
+                  <View key={`${name}-${i}`} style={[styles.chordCard, { flexBasis: cardWidth }]}>
+                    <ZoomableChordDiagram chord={chord} width={diagramWidth} numeral={numeral} degreeColor={degreeColor} />
+                    <View style={[styles.degreeBar, { backgroundColor: degreeColor }]} />
+                    <View style={styles.numeralBadge}>
+                      <Text style={styles.chordNumeral}>{numeral}</Text>
+                    </View>
                   </View>
                 );
-              }
-              const chord = applyVoicing(
-                rawChord,
-                voicingPrefs[rawChord.name] ?? 0,
-              );
-              return <ChordDiagram key={`${name}-${i}`} chord={chord} />;
-            })}
-          </ScrollView>
-        </Card>
-      )}
+              })}
+            </View>
+          </View>
+        )}
+      </View>
+    );
+  }, [selectedProg, selectedKey, starredProgs, resolvedChords, voicingPrefs, cardWidth, diagramWidth, findChord, applyVoicing, toggleBookmark]);
 
-      {/* Progression list */}
+  return (
+    <ScreenView>
       <FlatList
         data={filtered}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={[
-              styles.listItem,
-              selectedProg?.id === item.id && styles.listItemActive,
-            ]}
-            onPress={() => {
-              const next = selectedProg?.id === item.id ? null : item;
-              setSelectedProg(next);
-              if (next)
-                trackEvent("progression_view", { progression: next.name });
-            }}
-            activeOpacity={0.7}
-          >
-            <View style={styles.listItemHeader}>
-              <View style={styles.listItemNameRow}>
-                <Text style={styles.listItemName}>{item.name}</Text>
-                <TouchableOpacity
-                  onPress={() => toggleBookmark(item.id)}
-                  style={styles.bookmarkBtn}
-                  activeOpacity={0.7}
-                >
-                  <Text
-                    style={[
-                      styles.bookmarkText,
-                      starredProgs.includes(item.id) && styles.bookmarkActive,
-                    ]}
-                  >
-                    {starredProgs.includes(item.id) ? "\u2605" : "\u2606"}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-              <Text style={styles.listItemGenre}>{item.genre}</Text>
-            </View>
-            <Text style={styles.listItemNumerals}>
-              {item.numerals.join(" - ")}
-            </Text>
-          </TouchableOpacity>
-        )}
+        ListHeaderComponent={
+          <View style={styles.header}>
+            <Text style={styles.title}>Progressions</Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.chipScroll}
+            >
+              <Chip
+                label="All"
+                active={activeGenre === null && !showSavedOnly}
+                onPress={() => { setActiveGenre(null); setShowSavedOnly(false); setSelectedProg(null); }}
+              />
+              <Chip
+                label={showSavedOnly ? "\u2605" : "\u2606"}
+                active={showSavedOnly}
+                onPress={() => { setShowSavedOnly((v) => !v); setActiveGenre(null); setSelectedProg(null); }}
+              />
+              {GENRES.map((genre) => (
+                <Chip
+                  key={genre}
+                  label={genre}
+                  active={!showSavedOnly && activeGenre === genre}
+                  onPress={() => {
+                    setShowSavedOnly(false);
+                    setActiveGenre(activeGenre === genre ? null : genre);
+                    setSelectedProg(null);
+                  }}
+                />
+              ))}
+            </ScrollView>
+          </View>
+        }
+        renderItem={renderItem}
         ListEmptyComponent={
           <Text style={styles.emptyText}>No progressions found.</Text>
         }
@@ -261,112 +228,9 @@ const styles = StyleSheet.create({
   },
   chipScroll: {
     paddingBottom: spacing.xs,
-    alignItems: 'center',
-  },
-  detailCard: {
-    marginHorizontal: spacing.lg,
-    marginBottom: spacing.sm,
-  },
-  closeBtn: {
-    position: "absolute",
-    top: spacing.sm,
-    right: spacing.sm,
-    zIndex: 1,
-    width: 24,
-    height: 24,
     alignItems: "center",
-    justifyContent: "center",
-  },
-  closeBtnText: {
-    fontSize: 16,
-    fontWeight: "800",
-    color: colors.textMuted,
-    fontFamily: "monospace",
-  },
-  detailNameRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.xs,
-    marginBottom: spacing.xs,
-  },
-  detailName: {
-    fontSize: 18,
-    fontWeight: "800",
-    color: colors.text,
-    fontFamily: "monospace",
-  },
-  bookmarkBtn: {
-    width: 32,
-    height: 32,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  bookmarkText: {
-    fontSize: 22,
-    color: colors.textMuted,
-  },
-  bookmarkActive: {
-    color: colors.primary,
-  },
-  detailDesc: {
-    fontSize: 13,
-    color: colors.textMuted,
-    fontFamily: "monospace",
-    lineHeight: 20,
-    marginBottom: spacing.sm,
-  },
-  keyScroll: {
-    marginBottom: spacing.sm,
-  },
-  keyScrollContent: {
-    gap: spacing.xs,
-  },
-  keyBtn: {
-    paddingVertical: spacing.xs,
-    paddingHorizontal: spacing.sm + 2,
-    borderRadius: radii.sm,
-    borderWidth: 1.5,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-  },
-  keyBtnActive: {
-    backgroundColor: colors.primary,
-    borderColor: colors.accent,
-  },
-  keyBtnText: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: colors.textMuted,
-    fontFamily: "monospace",
-  },
-  keyBtnTextActive: {
-    color: colors.primaryContent,
-  },
-  numerals: {
-    fontSize: 14,
-    color: colors.textMuted,
-    fontFamily: "monospace",
-    textAlign: "center",
-    marginBottom: spacing.sm,
-  },
-  chordScroll: {
-    gap: spacing.md,
-    paddingVertical: spacing.sm,
-  },
-  missingChord: {
-    width: 100,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: spacing.lg,
-  },
-  missingText: {
-    fontSize: 18,
-    fontWeight: "800",
-    color: colors.textMuted,
-    fontFamily: "monospace",
   },
   list: {
-    paddingHorizontal: spacing.lg,
     paddingBottom: spacing.xxl,
   },
   listItem: {
@@ -375,11 +239,11 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: colors.border,
     padding: spacing.md,
+    marginHorizontal: spacing.lg,
     marginBottom: spacing.sm,
   },
   listItemActive: {
     borderColor: colors.primary,
-    backgroundColor: colors.bgAlt,
   },
   listItemHeader: {
     flexDirection: "row",
@@ -409,6 +273,106 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.textMuted,
     fontFamily: "monospace",
+  },
+  bookmarkBtn: {
+    width: 32,
+    height: 32,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  bookmarkText: {
+    fontSize: 22,
+    color: colors.textMuted,
+  },
+  bookmarkActive: {
+    color: colors.primary,
+  },
+  accordionContent: {
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    marginTop: spacing.sm,
+    paddingTop: spacing.sm,
+  },
+  detailDesc: {
+    fontSize: 13,
+    color: colors.textMuted,
+    fontFamily: "monospace",
+    lineHeight: 20,
+    marginBottom: spacing.sm,
+  },
+  keyScroll: {
+    marginBottom: spacing.sm,
+  },
+  keyScrollContent: {
+    gap: spacing.xs,
+  },
+  keyBtn: {
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.sm + 2,
+    borderRadius: radii.full,
+    borderWidth: 1.5,
+    borderColor: colors.borderStrong,
+    backgroundColor: colors.surface,
+  },
+  keyBtnActive: {
+    backgroundColor: colors.text,
+    borderColor: colors.text,
+  },
+  keyBtnText: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: colors.textMuted,
+    fontFamily: "monospace",
+  },
+  keyBtnTextActive: {
+    color: colors.card,
+  },
+  // Negative margin cancels listItem's padding so chord cards span edge-to-edge
+  // and the cardWidth formula matches home exactly
+  chordRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.xs,
+    marginTop: spacing.xs,
+    paddingBottom: spacing.xs,
+  },
+  chordCard: {
+    flexGrow: 0,
+    flexShrink: 0,
+    alignItems: "center",
+    backgroundColor: colors.card,
+    borderRadius: radii.md,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    paddingTop: spacing.sm,
+    paddingHorizontal: spacing.xs,
+    paddingBottom: spacing.xs,
+  },
+  degreeBar: {
+    height: 3,
+    borderRadius: 1.5,
+    alignSelf: "stretch",
+    marginTop: spacing.sm,
+  },
+  numeralBadge: {
+    backgroundColor: colors.bg,
+    borderRadius: radii.full,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    marginTop: spacing.sm,
+  },
+  chordNumeral: {
+    fontSize: 11,
+    fontWeight: "600",
+    color: colors.textMuted,
+    fontFamily: "monospace",
+  },
+  missingText: {
+    fontSize: 16,
+    fontWeight: "800",
+    color: colors.textMuted,
+    fontFamily: "monospace",
+    paddingVertical: spacing.lg,
   },
   emptyText: {
     textAlign: "center",

@@ -9,12 +9,13 @@ import { colors, spacing, radii } from '../theme';
 
 type Props = {
   chord: ChordData;
-  width: number;
-  numeral: string;
-  degreeColor: string;
+  width?: number;
+  compact?: boolean;
+  numeral?: string;
+  degreeColor?: string;
 };
 
-export function ZoomableChordDiagram({ chord, width, numeral, degreeColor }: Props) {
+export function ZoomableChordDiagram({ chord, width, compact, numeral, degreeColor }: Props) {
   const [visible, setVisible] = useState(false);
   const scale = useSharedValue(0);
   const { width: screenWidth } = useWindowDimensions();
@@ -50,7 +51,7 @@ export function ZoomableChordDiagram({ chord, width, numeral, degreeColor }: Pro
     <>
       <GestureDetector gesture={longPress}>
         <View>
-          <ChordDiagram chord={chord} width={width} />
+          <ChordDiagram chord={chord} width={width} compact={compact} />
         </View>
       </GestureDetector>
 
@@ -58,8 +59,10 @@ export function ZoomableChordDiagram({ chord, width, numeral, degreeColor }: Pro
         <Pressable style={styles.backdrop} onPress={hide}>
           <Animated.View style={[styles.zoomedContainer, animatedStyle]}>
             <ChordDiagram chord={chord} width={zoomedWidth} compact={false} />
-            <View style={[styles.degreeBar, { backgroundColor: degreeColor }]} />
-            <Text style={styles.numeral}>{numeral}</Text>
+            {degreeColor && (
+              <View style={[styles.degreeBar, { backgroundColor: degreeColor }]} />
+            )}
+            {numeral && <Text style={styles.numeral}>{numeral}</Text>}
           </Animated.View>
         </Pressable>
       </Modal>
