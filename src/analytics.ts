@@ -8,8 +8,8 @@ import { osVersion, modelName } from 'expo-device';
 import { Platform } from 'react-native';
 
 const PLAUSIBLE_URL = 'https://plausible.io/api/event';
-const DOMAIN = 'ukulala.app';
-const APP_URL = 'app://ukulala.app';
+const DOMAIN = 'app.ukulalala.com';
+const APP_URL = 'app://app.ukulalala.com';
 
 async function getDeviceId() {
   if (Platform.OS === 'android') return getAndroidId();
