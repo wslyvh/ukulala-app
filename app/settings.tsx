@@ -2,6 +2,8 @@ import { trackEvent } from "@/src/analytics";
 import { requestReview } from "@/src/review";
 import { colors, radii, spacing } from "@/src/theme";
 import { ScreenView } from "@/src/ui";
+import { useTuning } from "@/src/tuning";
+import type { Tuning } from "@/src/storage";
 import { useRouter } from "expo-router";
 import {
   Image,
@@ -19,8 +21,14 @@ const LINKS = [
   { label: "Twitter", url: "https://x.com/wslyvh" },
 ] as const;
 
-export default function AboutScreen() {
+const TUNING_OPTIONS: { value: Tuning; label: string; hint: string }[] = [
+  { value: "standard", label: "Ukulele", hint: "GCEA" },
+  { value: "baritone", label: "Baritone", hint: "DGBE" },
+];
+
+export default function SettingsScreen() {
   const router = useRouter();
+  const { tuning, setTuning } = useTuning();
 
   return (
     <ScreenView>
@@ -42,6 +50,28 @@ export default function AboutScreen() {
             </TouchableOpacity>
           </View>
         </View>
+
+        {/* Instrument section */}
+        <Text style={styles.sectionTitle}>Instrument</Text>
+        <View style={styles.tuningRow}>
+          {TUNING_OPTIONS.map((opt) => (
+            <TouchableOpacity
+              key={opt.value}
+              style={[styles.tuningBtn, tuning === opt.value && styles.tuningBtnActive]}
+              onPress={() => setTuning(opt.value)}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.tuningLabel, tuning === opt.value && styles.tuningLabelActive]}>
+                {opt.label}
+              </Text>
+              <Text style={[styles.tuningHint, tuning === opt.value && styles.tuningHintActive]}>
+                {opt.hint}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <View style={styles.divider} />
 
         <Text style={styles.title}>Ukulala</Text>
         <Text style={styles.tagline}>Ukulele chords & progression trainer</Text>
@@ -136,6 +166,48 @@ const styles = StyleSheet.create({
     fontFamily: "monospace",
     marginTop: -1,
   },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "800",
+    color: colors.text,
+    fontFamily: "monospace",
+    marginBottom: spacing.md,
+  },
+  tuningRow: {
+    flexDirection: "row",
+    gap: spacing.sm,
+  },
+  tuningBtn: {
+    flex: 1,
+    backgroundColor: colors.card,
+    borderWidth: 2,
+    borderColor: colors.border,
+    borderRadius: radii.md,
+    paddingVertical: spacing.md,
+    alignItems: "center",
+  },
+  tuningBtnActive: {
+    borderColor: colors.primary,
+    backgroundColor: colors.bgAlt,
+  },
+  tuningLabel: {
+    fontSize: 16,
+    fontWeight: "800",
+    color: colors.text,
+    fontFamily: "monospace",
+  },
+  tuningLabelActive: {
+    color: colors.primaryContent,
+  },
+  tuningHint: {
+    fontSize: 12,
+    color: colors.textMuted,
+    fontFamily: "monospace",
+    marginTop: spacing.xs,
+  },
+  tuningHintActive: {
+    color: colors.primaryContent,
+  },
   title: {
     fontSize: 32,
     fontWeight: "900",
@@ -161,13 +233,6 @@ const styles = StyleSheet.create({
     fontFamily: "monospace",
     lineHeight: 22,
     marginBottom: spacing.sm,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: "800",
-    color: colors.text,
-    fontFamily: "monospace",
-    marginBottom: spacing.md,
   },
   linkRow: {
     flexDirection: "row",

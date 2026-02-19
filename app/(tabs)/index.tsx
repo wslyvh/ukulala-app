@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, useWindowDimensions, Image } from 'react-native';
-import { Link, useFocusEffect } from 'expo-router';
+import { Link, useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { ScreenView, Button } from '@/src/ui';
 import { ZoomableChordDiagram } from '@/src/components/ZoomableChordDiagram';
 import { progressions } from '@/src/data/progressions';
-import { findChord, applyVoicing } from '@/src/data/chords';
+import { useTuning, useChordLookup } from '@/src/tuning';
 import {
   ALL_KEYS,
   NATURAL_KEYS,
@@ -65,9 +65,19 @@ function getInitialState() {
 }
 
 export default function HomeScreen() {
+  const router = useRouter();
+  const { tuning, isLoaded, hasChosen } = useTuning();
+  const { findChord, applyVoicing } = useChordLookup();
   const [state, setState] = useState(getInitialState);
   const [voicingPrefs, setVoicingPrefs] = useState<VoicingPrefs>({});
   const [starredProgs, setStarredProgs] = useState<string[]>([]);
+
+  // Welcome gate: redirect to picker on first launch
+  useEffect(() => {
+    if (isLoaded && !hasChosen) {
+      router.replace('/welcome');
+    }
+  }, [isLoaded, hasChosen]);
 
   useEffect(() => {
     loadSelectedKeys().then((stored) => {
@@ -82,9 +92,9 @@ export default function HomeScreen() {
   }, []);
 
   useFocusEffect(useCallback(() => {
-    loadVoicingPrefs().then(setVoicingPrefs);
+    loadVoicingPrefs(tuning).then(setVoicingPrefs);
     loadStarredProgs().then(setStarredProgs);
-  }, []));
+  }, [tuning]));
 
   const toggleStarProg = useCallback(() => {
     const id = state.prog.id;
@@ -158,6 +168,8 @@ export default function HomeScreen() {
   const isStarred = starredProgs.includes(prog.id);
   const chordNames = resolveProgression(key, prog.numerals);
 
+  if (!isLoaded) return null;
+
   return (
     <ScreenView>
       {/* Scrollable content */}
@@ -171,7 +183,7 @@ export default function HomeScreen() {
           <View style={styles.headerSpacer} />
           <Image source={require('@/assets/images/logo.png')} style={styles.logo} />
           <View style={styles.headerRight}>
-            <Link href="/about" asChild>
+            <Link href="/settings" asChild>
               <TouchableOpacity style={styles.infoBtn} activeOpacity={0.7}>
                 <Text style={styles.infoBtnText}>i</Text>
               </TouchableOpacity>

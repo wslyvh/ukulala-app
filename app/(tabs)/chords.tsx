@@ -10,14 +10,17 @@ import {
 import { useFocusEffect } from 'expo-router';
 import { ScreenView, Card, Chip } from '@/src/ui';
 import { ChordDiagram } from '@/src/components/ChordDiagram';
-import { chords, CHORD_CATEGORIES, getAllVoicings, applyVoicing } from '@/src/data/chords';
+import { CHORD_CATEGORIES } from '@/src/data/chords';
 import type { ChordCategory, ChordData } from '@/src/data/chords';
+import { useTuning, useChordLookup } from '@/src/tuning';
 import { loadVoicingPrefs, saveVoicingPrefs } from '@/src/storage';
 import { trackEvent } from '@/src/analytics';
 import type { VoicingPrefs } from '@/src/storage';
 import { colors, spacing, radii } from '@/src/theme';
 
 export default function ChordsScreen() {
+  const { tuning } = useTuning();
+  const { chords, getAllVoicings, applyVoicing } = useChordLookup();
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState<ChordCategory | null>(
     null
@@ -27,8 +30,9 @@ export default function ChordsScreen() {
   const [voicingPrefs, setVoicingPrefs] = useState<VoicingPrefs>({});
 
   useFocusEffect(useCallback(() => {
-    loadVoicingPrefs().then(setVoicingPrefs);
-  }, []));
+    loadVoicingPrefs(tuning).then(setVoicingPrefs);
+    return () => { setSelected(null); };
+  }, [tuning]));
 
   const filtered = useMemo(() => {
     let result = chords;
@@ -44,7 +48,7 @@ export default function ChordsScreen() {
       );
     }
     return result;
-  }, [search, activeCategory]);
+  }, [search, activeCategory, chords]);
 
   return (
     <ScreenView>
@@ -104,7 +108,7 @@ export default function ChordsScreen() {
             next[selected.name] = voicingIndex;
           }
           setVoicingPrefs(next);
-          saveVoicingPrefs(next);
+          saveVoicingPrefs(next, tuning);
         };
         return (
           <Card style={styles.detailCard}>

@@ -1,6 +1,6 @@
 import { trackEvent } from "@/src/analytics";
 import { ChordDiagram } from "@/src/components/ChordDiagram";
-import { applyVoicing, findChord } from "@/src/data/chords";
+import { useTuning, useChordLookup } from "@/src/tuning";
 import type { ProgressionData } from "@/src/data/progressions";
 import { GENRES, progressions } from "@/src/data/progressions";
 import type { VoicingPrefs } from "@/src/storage";
@@ -25,6 +25,8 @@ import {
 } from "react-native";
 
 export default function ProgressionsScreen() {
+  const { tuning } = useTuning();
+  const { findChord, applyVoicing } = useChordLookup();
   const [activeGenre, setActiveGenre] = useState<string | null>(null);
   const [selectedProg, setSelectedProg] = useState<ProgressionData | null>(
     null,
@@ -36,9 +38,9 @@ export default function ProgressionsScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      loadVoicingPrefs().then(setVoicingPrefs);
+      loadVoicingPrefs(tuning).then(setVoicingPrefs);
       loadStarredProgs().then(setStarredProgs);
-    }, []),
+    }, [tuning]),
   );
 
   const toggleBookmark = useCallback((id: string) => {

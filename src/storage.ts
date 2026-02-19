@@ -1,6 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { Key } from './utils/music';
 
+export type Tuning = 'standard' | 'baritone';
+
+const TUNING_KEY = 'tuning';
 const SELECTED_KEYS_KEY = 'selected_keys';
 const VOICING_PREFS_KEY = 'voicing_prefs';
 const STARRED_PROGS_KEY = 'starred_progressions';
@@ -21,11 +24,16 @@ function save(key: string, value: unknown): void {
   AsyncStorage.setItem(key, JSON.stringify(value)).catch(() => {});
 }
 
+export const loadTuning = (): Promise<Tuning | null> => load(TUNING_KEY, null);
+export const saveTuning = (tuning: Tuning): void     => save(TUNING_KEY, tuning);
+
 export const loadSelectedKeys = (): Promise<Key[] | null> => load(SELECTED_KEYS_KEY, null);
 export const saveSelectedKeys = (keys: Key[]): void       => save(SELECTED_KEYS_KEY, keys);
 
-export const loadVoicingPrefs = (): Promise<VoicingPrefs>  => load(VOICING_PREFS_KEY, {});
-export const saveVoicingPrefs = (prefs: VoicingPrefs): void => save(VOICING_PREFS_KEY, prefs);
+export const loadVoicingPrefs = (tuning: Tuning = 'standard'): Promise<VoicingPrefs> =>
+  load(`${VOICING_PREFS_KEY}_${tuning}`, {});
+export const saveVoicingPrefs = (prefs: VoicingPrefs, tuning: Tuning = 'standard'): void =>
+  save(`${VOICING_PREFS_KEY}_${tuning}`, prefs);
 
 export const loadStarredProgs = (): Promise<string[]>      => load(STARRED_PROGS_KEY, []);
 export const saveStarredProgs = (ids: string[]): void      => save(STARRED_PROGS_KEY, ids);
