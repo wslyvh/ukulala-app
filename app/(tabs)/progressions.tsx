@@ -16,6 +16,7 @@ import { findChord, applyVoicing } from '@/src/data/chords';
 import { ALL_KEYS, resolveProgression } from '@/src/utils/music';
 import type { Key } from '@/src/utils/music';
 import { loadVoicingPrefs } from '@/src/storage';
+import { trackEvent } from '@/src/analytics';
 import type { VoicingPrefs } from '@/src/storage';
 import { colors, spacing, radii } from '@/src/theme';
 
@@ -149,11 +150,11 @@ export default function ProgressionsScreen() {
               styles.listItem,
               selectedProg?.id === item.id && styles.listItemActive,
             ]}
-            onPress={() =>
-              setSelectedProg(
-                selectedProg?.id === item.id ? null : item
-              )
-            }
+            onPress={() => {
+              const next = selectedProg?.id === item.id ? null : item;
+              setSelectedProg(next);
+              if (next) trackEvent('progression_view', { progression: next.name });
+            }}
             activeOpacity={0.7}
           >
             <View style={styles.listItemHeader}>

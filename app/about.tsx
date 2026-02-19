@@ -41,8 +41,8 @@ export default function AboutScreen() {
         </Text>
 
         <Text style={styles.body}>
-          Built with Expo and React Native. No accounts, no tracking — just
-          chords.
+          Built with Expo and React Native. No accounts, no personal data —
+          just chords.
         </Text>
 
         <View style={styles.divider} />

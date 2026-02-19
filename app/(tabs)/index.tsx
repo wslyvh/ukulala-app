@@ -15,6 +15,7 @@ import {
 } from '@/src/utils/music';
 import type { Key } from '@/src/utils/music';
 import { loadSelectedKeys, saveSelectedKeys, loadVoicingPrefs } from '@/src/storage';
+import { trackEvent } from '@/src/analytics';
 import type { VoicingPrefs } from '@/src/storage';
 import { colors, spacing, radii } from '@/src/theme';
 
@@ -84,6 +85,7 @@ export default function HomeScreen() {
   }, []));
 
   const shuffle = useCallback(() => {
+    trackEvent('shuffle');
     setState((prev) => {
       const pool = prev.selectedKeys.length > 0 ? prev.selectedKeys : [...ALL_KEYS];
       return {

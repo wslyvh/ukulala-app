@@ -13,6 +13,7 @@ import { ChordDiagram } from '@/src/components/ChordDiagram';
 import { chords, CHORD_CATEGORIES, getAllVoicings, applyVoicing } from '@/src/data/chords';
 import type { ChordCategory, ChordData } from '@/src/data/chords';
 import { loadVoicingPrefs, saveVoicingPrefs } from '@/src/storage';
+import { trackEvent } from '@/src/analytics';
 import type { VoicingPrefs } from '@/src/storage';
 import { colors, spacing, radii } from '@/src/theme';
 
@@ -174,6 +175,7 @@ export default function ChordsScreen() {
               } else {
                 setSelected(item);
                 setVoicingIndex(voicingPrefs[item.name] ?? 0);
+                trackEvent('chord_view', { chord: item.name });
               }
             }}
             activeOpacity={0.7}
