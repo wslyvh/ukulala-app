@@ -1,5 +1,5 @@
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { colors, radii, spacing } from '../theme';
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { colors, radii, spacing } from "../theme";
 
 type Props = {
   label: string;
@@ -36,8 +36,9 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.textMuted,
+    includeFontPadding: false,
   },
   activeText: {
     color: colors.primaryContent,

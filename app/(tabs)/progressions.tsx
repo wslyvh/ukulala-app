@@ -1,41 +1,62 @@
-import { useState, useCallback, useMemo } from 'react';
+import { trackEvent } from "@/src/analytics";
+import { ChordDiagram } from "@/src/components/ChordDiagram";
+import { applyVoicing, findChord } from "@/src/data/chords";
+import type { ProgressionData } from "@/src/data/progressions";
+import { GENRES, progressions } from "@/src/data/progressions";
+import type { VoicingPrefs } from "@/src/storage";
 import {
-  View,
-  Text,
+  loadStarredProgs,
+  loadVoicingPrefs,
+  saveStarredProgs,
+} from "@/src/storage";
+import { colors, radii, spacing } from "@/src/theme";
+import { Card, Chip, ScreenView } from "@/src/ui";
+import type { Key } from "@/src/utils/music";
+import { ALL_KEYS, resolveProgression } from "@/src/utils/music";
+import { useFocusEffect } from "expo-router";
+import { useCallback, useMemo, useState } from "react";
+import {
   FlatList,
-  TouchableOpacity,
   ScrollView,
   StyleSheet,
-} from 'react-native';
-import { useFocusEffect } from 'expo-router';
-import { ScreenView, Card, Chip, Button } from '@/src/ui';
-import { ChordDiagram } from '@/src/components/ChordDiagram';
-import { progressions, GENRES } from '@/src/data/progressions';
-import type { ProgressionData } from '@/src/data/progressions';
-import { findChord, applyVoicing } from '@/src/data/chords';
-import { ALL_KEYS, resolveProgression } from '@/src/utils/music';
-import type { Key } from '@/src/utils/music';
-import { loadVoicingPrefs } from '@/src/storage';
-import { trackEvent } from '@/src/analytics';
-import type { VoicingPrefs } from '@/src/storage';
-import { colors, spacing, radii } from '@/src/theme';
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function ProgressionsScreen() {
   const [activeGenre, setActiveGenre] = useState<string | null>(null);
   const [selectedProg, setSelectedProg] = useState<ProgressionData | null>(
-    null
+    null,
   );
-  const [selectedKey, setSelectedKey] = useState<Key>('C');
+  const [selectedKey, setSelectedKey] = useState<Key>("C");
   const [voicingPrefs, setVoicingPrefs] = useState<VoicingPrefs>({});
+  const [starredProgs, setStarredProgs] = useState<string[]>([]);
+  const [showSavedOnly, setShowSavedOnly] = useState(false);
 
-  useFocusEffect(useCallback(() => {
-    loadVoicingPrefs().then(setVoicingPrefs);
-  }, []));
+  useFocusEffect(
+    useCallback(() => {
+      loadVoicingPrefs().then(setVoicingPrefs);
+      loadStarredProgs().then(setStarredProgs);
+    }, []),
+  );
+
+  const toggleBookmark = useCallback((id: string) => {
+    setStarredProgs((prev) => {
+      const next = prev.includes(id)
+        ? prev.filter((x) => x !== id)
+        : [...prev, id];
+      saveStarredProgs(next);
+      return next;
+    });
+  }, []);
 
   const filtered = useMemo(() => {
-    if (!activeGenre) return progressions;
-    return progressions.filter((p) => p.genre === activeGenre);
-  }, [activeGenre]);
+    if (showSavedOnly)
+      return progressions.filter((p) => starredProgs.includes(p.id));
+    if (activeGenre) return progressions.filter((p) => p.genre === activeGenre);
+    return progressions;
+  }, [activeGenre, showSavedOnly, starredProgs]);
 
   const resolvedChords = useMemo(() => {
     if (!selectedProg) return [];
@@ -55,17 +76,29 @@ export default function ProgressionsScreen() {
         >
           <Chip
             label="All"
-            active={activeGenre === null}
-            onPress={() => setActiveGenre(null)}
+            active={activeGenre === null && !showSavedOnly}
+            onPress={() => {
+              setActiveGenre(null);
+              setShowSavedOnly(false);
+            }}
+          />
+          <Chip
+            label={showSavedOnly ? "\u2605" : "\u2606"}
+            active={showSavedOnly}
+            onPress={() => {
+              setShowSavedOnly((v) => !v);
+              setActiveGenre(null);
+            }}
           />
           {GENRES.map((genre) => (
             <Chip
               key={genre}
               label={genre}
-              active={activeGenre === genre}
-              onPress={() =>
-                setActiveGenre(activeGenre === genre ? null : genre)
-              }
+              active={!showSavedOnly && activeGenre === genre}
+              onPress={() => {
+                setShowSavedOnly(false);
+                setActiveGenre(activeGenre === genre ? null : genre);
+              }}
             />
           ))}
         </ScrollView>
@@ -81,7 +114,24 @@ export default function ProgressionsScreen() {
             <Text style={styles.closeBtnText}>x</Text>
           </TouchableOpacity>
 
-          <Text style={styles.detailName}>{selectedProg.name}</Text>
+          <View style={styles.detailNameRow}>
+            <Text style={styles.detailName}>{selectedProg.name}</Text>
+            <TouchableOpacity
+              onPress={() => toggleBookmark(selectedProg.id)}
+              style={styles.bookmarkBtn}
+              activeOpacity={0.7}
+            >
+              <Text
+                style={[
+                  styles.bookmarkText,
+                  starredProgs.includes(selectedProg.id) &&
+                    styles.bookmarkActive,
+                ]}
+              >
+                {starredProgs.includes(selectedProg.id) ? "\u2605" : "\u2606"}
+              </Text>
+            </TouchableOpacity>
+          </View>
           <Text style={styles.detailDesc}>{selectedProg.description}</Text>
 
           {/* Key selector */}
@@ -114,7 +164,7 @@ export default function ProgressionsScreen() {
 
           {/* Numerals */}
           <Text style={styles.numerals}>
-            {selectedProg.numerals.join(' - ')}
+            {selectedProg.numerals.join(" - ")}
           </Text>
 
           {/* Chord diagrams */}
@@ -132,7 +182,10 @@ export default function ProgressionsScreen() {
                   </View>
                 );
               }
-              const chord = applyVoicing(rawChord, voicingPrefs[rawChord.name] ?? 0);
+              const chord = applyVoicing(
+                rawChord,
+                voicingPrefs[rawChord.name] ?? 0,
+              );
               return <ChordDiagram key={`${name}-${i}`} chord={chord} />;
             })}
           </ScrollView>
@@ -153,16 +206,33 @@ export default function ProgressionsScreen() {
             onPress={() => {
               const next = selectedProg?.id === item.id ? null : item;
               setSelectedProg(next);
-              if (next) trackEvent('progression_view', { progression: next.name });
+              if (next)
+                trackEvent("progression_view", { progression: next.name });
             }}
             activeOpacity={0.7}
           >
             <View style={styles.listItemHeader}>
-              <Text style={styles.listItemName}>{item.name}</Text>
+              <View style={styles.listItemNameRow}>
+                <Text style={styles.listItemName}>{item.name}</Text>
+                <TouchableOpacity
+                  onPress={() => toggleBookmark(item.id)}
+                  style={styles.bookmarkBtn}
+                  activeOpacity={0.7}
+                >
+                  <Text
+                    style={[
+                      styles.bookmarkText,
+                      starredProgs.includes(item.id) && styles.bookmarkActive,
+                    ]}
+                  >
+                    {starredProgs.includes(item.id) ? "\u2605" : "\u2606"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
               <Text style={styles.listItemGenre}>{item.genre}</Text>
             </View>
             <Text style={styles.listItemNumerals}>
-              {item.numerals.join(' - ')}
+              {item.numerals.join(" - ")}
             </Text>
           </TouchableOpacity>
         )}
@@ -182,45 +252,64 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    fontWeight: '900',
+    fontWeight: "900",
     color: colors.text,
-    fontFamily: 'monospace',
+    fontFamily: "monospace",
     marginBottom: spacing.md,
   },
   chipScroll: {
     paddingBottom: spacing.xs,
+    alignItems: 'center',
   },
   detailCard: {
     marginHorizontal: spacing.lg,
     marginBottom: spacing.sm,
   },
   closeBtn: {
-    position: 'absolute',
+    position: "absolute",
     top: spacing.sm,
     right: spacing.sm,
     zIndex: 1,
     width: 24,
     height: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   closeBtnText: {
     fontSize: 16,
-    fontWeight: '800',
+    fontWeight: "800",
     color: colors.textMuted,
-    fontFamily: 'monospace',
+    fontFamily: "monospace",
+  },
+  detailNameRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.xs,
+    marginBottom: spacing.xs,
   },
   detailName: {
     fontSize: 18,
-    fontWeight: '800',
+    fontWeight: "800",
     color: colors.text,
-    fontFamily: 'monospace',
-    marginBottom: spacing.xs,
+    fontFamily: "monospace",
+  },
+  bookmarkBtn: {
+    width: 32,
+    height: 32,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  bookmarkText: {
+    fontSize: 22,
+    color: colors.textMuted,
+  },
+  bookmarkActive: {
+    color: colors.primary,
   },
   detailDesc: {
     fontSize: 13,
     color: colors.textMuted,
-    fontFamily: 'monospace',
+    fontFamily: "monospace",
     lineHeight: 20,
     marginBottom: spacing.sm,
   },
@@ -244,9 +333,9 @@ const styles = StyleSheet.create({
   },
   keyBtnText: {
     fontSize: 13,
-    fontWeight: '700',
+    fontWeight: "700",
     color: colors.textMuted,
-    fontFamily: 'monospace',
+    fontFamily: "monospace",
   },
   keyBtnTextActive: {
     color: colors.primaryContent,
@@ -254,8 +343,8 @@ const styles = StyleSheet.create({
   numerals: {
     fontSize: 14,
     color: colors.textMuted,
-    fontFamily: 'monospace',
-    textAlign: 'center',
+    fontFamily: "monospace",
+    textAlign: "center",
     marginBottom: spacing.sm,
   },
   chordScroll: {
@@ -264,15 +353,15 @@ const styles = StyleSheet.create({
   },
   missingChord: {
     width: 100,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: spacing.lg,
   },
   missingText: {
     fontSize: 18,
-    fontWeight: '800',
+    fontWeight: "800",
     color: colors.textMuted,
-    fontFamily: 'monospace',
+    fontFamily: "monospace",
   },
   list: {
     paddingHorizontal: spacing.lg,
@@ -291,33 +380,38 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bgAlt,
   },
   listItemHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: spacing.xs,
+  },
+  listItemNameRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+    gap: spacing.xs,
   },
   listItemName: {
     fontSize: 15,
-    fontWeight: '700',
+    fontWeight: "700",
     color: colors.text,
-    fontFamily: 'monospace',
-    flex: 1,
+    fontFamily: "monospace",
   },
   listItemGenre: {
     fontSize: 11,
     color: colors.textLight,
-    fontFamily: 'monospace',
-    fontStyle: 'italic',
+    fontFamily: "monospace",
+    fontStyle: "italic",
   },
   listItemNumerals: {
     fontSize: 13,
     color: colors.textMuted,
-    fontFamily: 'monospace',
+    fontFamily: "monospace",
   },
   emptyText: {
-    textAlign: 'center',
+    textAlign: "center",
     color: colors.textMuted,
-    fontFamily: 'monospace',
+    fontFamily: "monospace",
     marginTop: spacing.xxl,
     fontSize: 14,
   },

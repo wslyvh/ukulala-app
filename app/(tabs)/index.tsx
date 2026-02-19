@@ -14,7 +14,7 @@ import {
   pickRandom,
 } from '@/src/utils/music';
 import type { Key } from '@/src/utils/music';
-import { loadSelectedKeys, saveSelectedKeys, loadVoicingPrefs } from '@/src/storage';
+import { loadSelectedKeys, saveSelectedKeys, loadVoicingPrefs, loadStarredProgs, saveStarredProgs } from '@/src/storage';
 import { trackEvent } from '@/src/analytics';
 import type { VoicingPrefs } from '@/src/storage';
 import { colors, spacing, radii } from '@/src/theme';
@@ -61,12 +61,13 @@ function pickKeyFromPool(pool: readonly Key[], avoid?: Key): Key {
 function getInitialState() {
   const prog = pickRandom(progressions);
   const key = pickKeyFromPool(NATURAL_KEYS);
-  return { prog, key, selectedKeys: [...NATURAL_KEYS] as Key[] };
+  return { prog, key, selectedKeys: [...NATURAL_KEYS] as Key[], starredOnly: false };
 }
 
 export default function HomeScreen() {
   const [state, setState] = useState(getInitialState);
   const [voicingPrefs, setVoicingPrefs] = useState<VoicingPrefs>({});
+  const [starredProgs, setStarredProgs] = useState<string[]>([]);
 
   useEffect(() => {
     loadSelectedKeys().then((stored) => {
@@ -82,19 +83,37 @@ export default function HomeScreen() {
 
   useFocusEffect(useCallback(() => {
     loadVoicingPrefs().then(setVoicingPrefs);
+    loadStarredProgs().then(setStarredProgs);
   }, []));
+
+  const toggleStarProg = useCallback(() => {
+    const id = state.prog.id;
+    setStarredProgs((prev) => {
+      const next = prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id];
+      saveStarredProgs(next);
+      return next;
+    });
+  }, [state.prog.id]);
+
+  const toggleStarredOnly = useCallback(() => {
+    setState((prev) => ({ ...prev, starredOnly: !prev.starredOnly }));
+  }, []);
 
   const shuffle = useCallback(() => {
     trackEvent('shuffle');
     setState((prev) => {
-      const pool = prev.selectedKeys.length > 0 ? prev.selectedKeys : [...ALL_KEYS];
+      const progPool =
+        prev.starredOnly && starredProgs.length > 0
+          ? progressions.filter((p) => starredProgs.includes(p.id))
+          : progressions;
+      const keyPool = prev.selectedKeys.length > 0 ? prev.selectedKeys : [...ALL_KEYS];
       return {
         ...prev,
-        prog: pickRandom(progressions),
-        key: pickKeyFromPool(pool, prev.key),
+        prog: pickRandom(progPool),
+        key: pickKeyFromPool(keyPool, prev.key),
       };
     });
-  }, []);
+  }, [starredProgs]);
 
   const toggleKey = useCallback((k: Key) => {
     setState((prev) => {
@@ -135,7 +154,8 @@ export default function HomeScreen() {
   const gap = spacing.sm; // 8
   const cardWidth = Math.floor((screenWidth - horizontalPadding * 2 - gap * 3) / 4);
 
-  const { prog, key, selectedKeys } = state;
+  const { prog, key, selectedKeys, starredOnly } = state;
+  const isStarred = starredProgs.includes(prog.id);
   const chordNames = resolveProgression(key, prog.numerals);
 
   return (
@@ -164,6 +184,11 @@ export default function HomeScreen() {
           <View style={styles.titleTopRow}>
             <Text style={styles.progName}>{prog.name}</Text>
             <Text style={styles.genre}>{prog.genre}</Text>
+            <TouchableOpacity onPress={toggleStarProg} style={styles.starProgBtn} activeOpacity={0.7}>
+              <Text style={[styles.starProgText, isStarred && styles.starProgActive]}>
+                {isStarred ? '\u2605' : '\u2606'}
+              </Text>
+            </TouchableOpacity>
           </View>
           <Text style={styles.keyLabel}>Key of {key}</Text>
         </View>
@@ -203,12 +228,23 @@ export default function HomeScreen() {
 
       {/* Fixed bottom controls */}
       <View style={styles.bottomBar}>
-        <Button
-          label="Shuffle"
-          onPress={shuffle}
-          variant="primary"
-          style={styles.shuffleBtn}
-        />
+        <View style={styles.shuffleRow}>
+          <Button
+            label="Shuffle"
+            onPress={shuffle}
+            variant="primary"
+            style={styles.shuffleBtn}
+          />
+          <TouchableOpacity
+            onPress={toggleStarredOnly}
+            activeOpacity={0.7}
+            style={[styles.starFilterBtn, starredOnly && styles.starFilterBtnActive]}
+          >
+            <Text style={[styles.starFilterText, starredOnly && styles.starFilterTextActive]}>
+              {starredOnly ? '\u2605' : '\u2606'}
+            </Text>
+          </TouchableOpacity>
+        </View>
 
         <View style={styles.keyBar}>
           {KEY_BAR_ITEMS.map((item) => {
@@ -396,9 +432,35 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.md,
     gap: spacing.md,
   },
+  shuffleRow: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
   shuffleBtn: {
+    flex: 1,
     height: BAR_HEIGHT,
     borderRadius: radii.full,
+  },
+  starFilterBtn: {
+    width: BAR_HEIGHT,
+    height: BAR_HEIGHT,
+    borderRadius: radii.full,
+    backgroundColor: colors.card,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  starFilterBtnActive: {
+    backgroundColor: colors.primary,
+    borderColor: colors.accent,
+  },
+  starFilterText: {
+    fontSize: 20,
+    color: colors.textMuted,
+  },
+  starFilterTextActive: {
+    color: colors.primaryContent,
   },
   keyBar: {
     flexDirection: 'row',
@@ -454,5 +516,18 @@ const styles = StyleSheet.create({
     borderRadius: radii.full,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  starProgBtn: {
+    width: 28,
+    height: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  starProgText: {
+    fontSize: 24,
+    color: colors.textMuted,
+  },
+  starProgActive: {
+    color: colors.primary,
   },
 });

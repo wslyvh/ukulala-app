@@ -3,34 +3,29 @@ import type { Key } from './utils/music';
 
 const SELECTED_KEYS_KEY = 'selected_keys';
 const VOICING_PREFS_KEY = 'voicing_prefs';
+const STARRED_PROGS_KEY = 'starred_progressions';
 
-export async function loadSelectedKeys(): Promise<Key[] | null> {
-  try {
-    const raw = await AsyncStorage.getItem(SELECTED_KEYS_KEY);
-    if (raw == null) return null;
-    return JSON.parse(raw) as Key[];
-  } catch {
-    return null;
-  }
-}
-
-export function saveSelectedKeys(keys: Key[]): void {
-  AsyncStorage.setItem(SELECTED_KEYS_KEY, JSON.stringify(keys)).catch(() => {});
-}
-
-/** Voicing preferences: chord name → preferred voicing index */
 export type VoicingPrefs = Record<string, number>;
 
-export async function loadVoicingPrefs(): Promise<VoicingPrefs> {
+async function load<T>(key: string, fallback: T): Promise<T> {
   try {
-    const raw = await AsyncStorage.getItem(VOICING_PREFS_KEY);
-    if (raw == null) return {};
-    return JSON.parse(raw) as VoicingPrefs;
+    const raw = await AsyncStorage.getItem(key);
+    if (raw == null) return fallback;
+    return JSON.parse(raw) as T;
   } catch {
-    return {};
+    return fallback;
   }
 }
 
-export function saveVoicingPrefs(prefs: VoicingPrefs): void {
-  AsyncStorage.setItem(VOICING_PREFS_KEY, JSON.stringify(prefs)).catch(() => {});
+function save(key: string, value: unknown): void {
+  AsyncStorage.setItem(key, JSON.stringify(value)).catch(() => {});
 }
+
+export const loadSelectedKeys = (): Promise<Key[] | null> => load(SELECTED_KEYS_KEY, null);
+export const saveSelectedKeys = (keys: Key[]): void       => save(SELECTED_KEYS_KEY, keys);
+
+export const loadVoicingPrefs = (): Promise<VoicingPrefs>  => load(VOICING_PREFS_KEY, {});
+export const saveVoicingPrefs = (prefs: VoicingPrefs): void => save(VOICING_PREFS_KEY, prefs);
+
+export const loadStarredProgs = (): Promise<string[]>      => load(STARRED_PROGS_KEY, []);
+export const saveStarredProgs = (ids: string[]): void      => save(STARRED_PROGS_KEY, ids);
