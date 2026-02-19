@@ -31,7 +31,7 @@ export default function RootLayout() {
           <Stack.Screen name="settings" options={{ presentation: 'modal', headerShown: false }} />
           <Stack.Screen name="welcome" options={{ headerShown: false }} />
         </Stack>
-        <StatusBar style="dark" />
+          <StatusBar style="auto" />
       </GestureHandlerRootView>
     </TuningProvider>
   );
