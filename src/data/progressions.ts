@@ -13,6 +13,7 @@ export type ProgressionData = {
   numerals: Numeral[];
   genre: string;
   description: string;
+  examples?: string[];
 };
 
 export const progressions: ProgressionData[] = [
@@ -23,6 +24,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'V', 'vi', 'IV'],
     genre: 'Pop',
     description: 'The most popular progression in modern music. Used in countless hits.',
+    examples: ["I'm Yours", 'Let It Be', 'No Woman No Cry'],
   },
   {
     id: 'major-4-rotation',
@@ -30,6 +32,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['IV', 'I', 'vi', 'V'],
     genre: 'Pop',
     description: 'A rotation of the Major 4, starting on the subdominant.',
+    examples: ['Umbrella', 'Africa', 'Learning to Fly'],
   },
   {
     id: 'major-4-sub',
@@ -37,6 +40,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'V', 'ii', 'IV'],
     genre: 'Pop',
     description: 'Major 4 variant replacing vi with ii for a brighter feel.',
+    examples: ['Just Like Heaven', 'Closing Time', 'All Star'],
   },
   {
     id: 'stepwise-pop',
@@ -44,6 +48,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'ii', 'IV'],
     genre: 'Pop',
     description: 'Beginner-friendly lift from tonic to ii into IV.',
+    examples: ['Fast Car', 'With a Little Help from My Friends', 'Piano Man'],
   },
   {
     id: 'pop-rotation-lift',
@@ -51,6 +56,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['IV', 'I', 'V', 'vi'],
     genre: 'Pop',
     description: 'A IV-start pop loop that builds then soft-lands on vi.',
+    examples: ['Walking on Sunshine', 'Down'],
   },
   {
     id: 'doo-wop-variant',
@@ -58,6 +64,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'vi', 'iii', 'V'],
     genre: 'Pop',
     description: 'Classic-sounding variant with a smooth iii step before V.',
+    examples: ['I Feel Fine', 'In My Room', 'Crying'],
   },
   {
     id: 'minor-4',
@@ -72,6 +79,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'IV', 'I', 'V', 'I'],
     genre: 'Pop',
     description: 'Bouncy and optimistic with repeated tonic anchoring.',
+    examples: ['You Are My Sunshine', 'This Land Is Your Land'],
   },
   {
     id: 'majors',
@@ -79,6 +87,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'vi', 'ii', 'V'],
     genre: 'Pop',
     description: 'Circle-of-fifths movement through major and minor chords.',
+    examples: ['Blue Moon', 'Island in the Sun', 'All the Things You Are'],
   },
   {
     id: 'minor-upbeat',
@@ -93,6 +102,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['vi', 'IV', 'I', 'V'],
     genre: 'Pop',
     description: 'The 2000s hit machine. Emotional and instantly recognizable.',
+    examples: ['Someone Like You', 'Let Her Go', 'Demons', 'Set Fire to the Rain'],
   },
   {
     id: 'axis-rotation',
@@ -100,6 +110,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['vi', 'IV', 'V', 'I'],
     genre: 'Pop',
     description: 'A vi-start rotation. Builds tension before resolving home.',
+    examples: ["Don't Stop Believin'", 'Livin on a Prayer', 'Mr. Brightside'],
   },
   {
     id: 'royal-road',
@@ -107,6 +118,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['IV', 'V', 'iii', 'vi'],
     genre: 'Pop',
     description: 'The "Royal Road" progression — a cornerstone of Japanese pop and anime music.',
+    examples: ['Everywhere', 'Every Breath You Take'],
   },
 
   // --- Rock ---
@@ -116,6 +128,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'IV', 'V'],
     genre: 'Rock',
     description: 'The essential three-chord rock foundation.',
+    examples: ['Wild Thing', "Blowin' in the Wind", 'Twist and Shout', "Knockin' on Heaven's Door"],
   },
   {
     id: 'rock-majors-rotation',
@@ -123,6 +136,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['V', 'IV', 'I'],
     genre: 'Rock',
     description: 'Reversed rock cadence. Resolves downward to the tonic.',
+    examples: ['Sweet Home Alabama', "Sweet Child O' Mine", 'More Than a Feeling', "Summer of '69"],
   },
   {
     id: 'rock-n-roll',
@@ -130,6 +144,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'IV', 'V', 'I'],
     genre: 'Rock',
     description: 'The classic rock and roll loop with a satisfying resolution.',
+    examples: ['Rock Around the Clock', 'Good Golly Miss Molly', 'Kansas City'],
   },
   {
     id: 'creep',
@@ -137,6 +152,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'iii', 'IV', 'I'],
     genre: 'Rock',
     description: 'Made famous by Radiohead. A haunting, tension-filled loop.',
+    examples: ['Creep'],
   },
   {
     id: 'wonderwall',
@@ -144,6 +160,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'iii', 'vii°', 'IV'],
     genre: 'Rock',
     description: 'The signature Oasis sound. Moody and anthemic.',
+    examples: ['Wonderwall'],
   },
   {
     id: 'punk-drive',
@@ -151,6 +168,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'V', 'IV', 'V'],
     genre: 'Rock',
     description: 'Fast and raw. Three chords and the truth.',
+    examples: ['Wonderful Tonight', 'Roxanne', "Knockin' on Heaven's Door"],
   },
   {
     id: 'punk-anthem',
@@ -158,6 +176,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'IV', 'V', 'IV'],
     genre: 'Rock',
     description: 'High-energy anthem loop. Play it loud and fast.',
+    examples: ['Louie Louie', 'Wild Thing', 'Hang On Sloopy', 'Great Balls of Fire'],
   },
 
   // --- Blues ---
@@ -167,6 +186,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'IV', 'I', 'V'],
     genre: 'Blues',
     description: 'A short blues turnaround with dominant tension.',
+    examples: ['Midnight Special', 'Red Red Wine', 'Rivers of Babylon'],
   },
   {
     id: 'blues-progression',
@@ -174,6 +194,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'IV', 'I', 'I'],
     genre: 'Blues',
     description: 'Simple two-chord blues vamp over four bars.',
+    examples: ['Got My Mojo Working', 'Baby Please Don\'t Go'],
   },
   {
     id: 'the-blues',
@@ -181,6 +202,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'IV', 'I', 'V', 'I'],
     genre: 'Blues',
     description: 'A straightforward blues line that returns firmly to the tonic.',
+    examples: ['Green Onions', 'Crossroads', 'Pride and Joy'],
   },
   {
     id: '8-bar-blues',
@@ -188,6 +210,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'V', 'IV', 'IV', 'I', 'V', 'I', 'V'],
     genre: 'Blues',
     description: 'Compact 8-bar blues form. A shorter alternative to the 12-bar.',
+    examples: ['Key to the Highway', 'Heartbreak Hotel', 'Worried Life Blues'],
   },
   {
     id: '12-bar-blues',
@@ -195,6 +218,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'I', 'I', 'I', 'IV', 'IV', 'I', 'I', 'V', 'IV', 'I', 'I'],
     genre: 'Blues',
     description: 'The quintessential blues form. Twelve bars of pure soul.',
+    examples: ['Johnny B. Goode', 'Sweet Home Chicago', 'Hound Dog'],
   },
 
   // --- Jazz ---
@@ -204,6 +228,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['ii', 'V', 'I', 'vi'],
     genre: 'Jazz',
     description: 'Standard jazz turnaround starting with the classic ii-V resolution.',
+    examples: ['Satin Doll', 'I Got Rhythm', 'Cotton Tail'],
   },
   {
     id: 'jazz-progression',
@@ -211,6 +236,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['ii', 'V', 'I', 'IV'],
     genre: 'Jazz',
     description: 'Extended ii-V-I resolving onward to the subdominant.',
+    examples: ['Fly Me to the Moon', 'Misty', 'Someday My Prince Will Come'],
   },
   {
     id: 'jazz-ii-v-i',
@@ -218,6 +244,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['ii7', 'V7', 'I', 'I'],
     genre: 'Jazz',
     description: 'The most fundamental jazz cadence with 7th chords.',
+    examples: ['Autumn Leaves', 'All The Things You Are'],
   },
   {
     id: 'bossa-nova',
@@ -225,6 +252,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'vi7', 'ii7', 'V7'],
     genre: 'Jazz',
     description: 'Smooth Brazilian bossa nova with lush 7th chords.',
+    examples: ['The Girl from Ipanema', 'Fly Me to the Moon', 'Desafinado'],
   },
   {
     id: 'bossa-turnaround',
@@ -232,6 +260,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['ii7', 'V7', 'I', 'vi7'],
     genre: 'Jazz',
     description: 'Jazz-influenced bossa turnaround. Sophisticated and silky.',
+    examples: ['Wave', 'Corcovado', 'Blue Moon'],
   },
 
   // --- Classics ---
@@ -241,6 +270,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'vi', 'IV', 'V'],
     genre: 'Classics',
     description: 'Classic 1950s doo-wop progression. Pure nostalgia.',
+    examples: ['Stand By Me', 'Blue Moon', 'Be My Baby'],
   },
   {
     id: 'motown',
@@ -248,6 +278,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'I7', 'IV', 'IV7'],
     genre: 'Classics',
     description: 'Classic Motown color with dominant 7ths. Smooth and groovy.',
+    examples: ["What'd I Say", 'Blue Suede Shoes', 'Shake Rattle and Roll'],
   },
   {
     id: 'soul-ballad',
@@ -255,6 +286,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'vi', 'IV', 'V'],
     genre: 'Classics',
     description: 'Timeless soul ballad form. Heart and Soul, Stand By Me.',
+    examples: ['Unchained Melody', 'Every Breath You Take', 'Wonderful World', 'Take Me Home Country Roads'],
   },
   {
     id: 'andalusian-cadence',
@@ -262,6 +294,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['vi', 'V', 'IV', 'iii'],
     genre: 'Classics',
     description: 'Iconic descending progression from Spanish and flamenco music.',
+    examples: ['Hit the Road Jack', 'Stairway to Heaven', 'White Room'],
   },
   {
     id: 'andalusian-cadence-major',
@@ -269,6 +302,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'vii°', 'vi', 'V'],
     genre: 'Classics',
     description: 'Major-key variant of the Andalusian descent.',
+    examples: ['Smooth Criminal', 'What Is Life'],
   },
   {
     id: 'canon-in-d',
@@ -276,6 +310,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'V', 'vi', 'iii'],
     genre: 'Classics',
     description: "From Pachelbel's Canon. Elegant and timeless.",
+    examples: ["Pachelbel's Canon", 'Basket Case', 'Go Your Own Way'],
   },
   {
     id: 'doo-wop-minor',
@@ -283,6 +318,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['vi', 'IV', 'I', 'V'],
     genre: 'Classics',
     description: 'The emotional minor doo-wop sound. Earth Angel vibes.',
+    examples: ['Africa', 'Despacito', 'Earth Angel'],
   },
 
   // --- Folk & Country ---
@@ -292,6 +328,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'IV', 'V', 'IV'],
     genre: 'Folk & Country',
     description: 'A bright, uplifting campfire-style progression.',
+    examples: ['Down on the Corner', 'Green River'],
   },
   {
     id: 'country-roads',
@@ -299,6 +336,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'V', 'vi', 'IV'],
     genre: 'Folk & Country',
     description: 'The backbone of country music. Open road sing-along.',
+    examples: ['Wagon Wheel', 'Wide Open Spaces', 'Viva la Vida', 'She Will Be Loved'],
   },
   {
     id: 'country-waltz',
@@ -306,6 +344,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'IV', 'V', 'I'],
     genre: 'Folk & Country',
     description: 'Simple country waltz. Front porch picking.',
+    examples: ['You Are My Sunshine', 'Red River Valley', 'Amazing Grace'],
   },
   {
     id: 'freight-train',
@@ -313,6 +352,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'V', 'I', 'IV'],
     genre: 'Folk & Country',
     description: 'Rolling fingerpicking pattern. A folk standard.',
+    examples: ['Freight Train', 'Jamaica Farewell', 'Sloop John B'],
   },
   {
     id: 'bluegrass-run',
@@ -320,6 +360,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'IV', 'V', 'V'],
     genre: 'Folk & Country',
     description: 'Fast flatpicking energy. Keep your fingers moving.',
+    examples: ['Old Joe Clark', 'Tom Dooley'],
   },
   {
     id: 'folk-two-chord',
@@ -327,6 +368,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'V'],
     genre: 'Folk & Country',
     description: 'Minimal folk foundation that works for many campfire songs.',
+    examples: ['Skip to My Lou', 'Old MacDonald Had a Farm', 'Go Tell Aunt Rhody'],
   },
   {
     id: 'folk-two-chord-iv',
@@ -334,6 +376,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'IV'],
     genre: 'Folk & Country',
     description: 'Ultra-simple campfire progression using just I and IV.',
+    examples: ["He's Got the Whole World", 'Simple Gifts'],
   },
 
   // --- Island ---
@@ -343,6 +386,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'IV', 'V', 'I'],
     genre: 'Island',
     description: 'The quintessential Hawaiian turnaround. Warm and sunny.',
+    examples: ['Tiny Bubbles', 'Aloha Oe'],
   },
   {
     id: 'hawaiian-slack-key',
@@ -350,6 +394,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'V', 'IV', 'I'],
     genre: 'Island',
     description: 'Inspired by slack-key guitar traditions. Simple and sweet.',
+    examples: ['Lovely Hula Hands', 'My Little Grass Shack'],
   },
   {
     id: 'hawaiian-hula',
@@ -357,6 +402,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'IV', 'I', 'IV'],
     genre: 'Island',
     description: 'Gentle two-chord hula sway. Hypnotic and relaxing.',
+    examples: ['Little Grass Shack', 'Hukilau Song'],
   },
   {
     id: 'hawaiian-breeze',
@@ -364,6 +410,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'vi', 'IV', 'V'],
     genre: 'Island',
     description: 'A breezy island progression with a touch of longing.',
+    examples: ['Kingston Town', 'Beautiful Girls'],
   },
   {
     id: 'island-strum',
@@ -371,6 +418,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'V', 'vi', 'IV'],
     genre: 'Island',
     description: 'The island take on the four-chord anthem. Feels like a beach sunset.',
+    examples: ['Somewhere Over the Rainbow', 'Love Story', 'Wonderful'],
   },
   {
     id: 'island-lullaby',
@@ -378,6 +426,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'iii', 'IV', 'V'],
     genre: 'Island',
     description: 'Soft and dreamy. Perfect for swaying under palm trees.',
+    examples: ['Puff the Magic Dragon', 'Crocodile Rock', 'Build Me Up Buttercup', 'Have I Told You Lately'],
   },
   {
     id: 'island-serenade',
@@ -385,6 +434,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'vi', 'ii', 'V'],
     genre: 'Island',
     description: 'A romantic island serenade with circle-of-fifths movement.',
+    examples: ['Island in the Sun', 'Long Ago and Far Away'],
   },
   {
     id: 'reggae-drop',
@@ -392,6 +442,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'IV', 'V', 'IV'],
     genre: 'Island',
     description: 'Classic reggae strum pattern. Laid-back island groove.',
+    examples: ['Pressure Drop', 'Louie Louie', 'Hang On Sloopy'],
   },
   {
     id: 'reggae-one-drop',
@@ -399,6 +450,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'IV', 'I', 'V'],
     genre: 'Island',
     description: 'Roots reggae feel with emphasis on the off-beat.',
+    examples: ['Stir It Up', 'Rivers of Babylon', 'Red Red Wine'],
   },
   {
     id: 'reggae-skanking',
@@ -406,6 +458,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'vi', 'IV', 'V'],
     genre: 'Island',
     description: 'Upbeat ska-influenced reggae progression.',
+    examples: ['Be My Baby', 'Kingston Town', 'Every Breath You Take'],
   },
 
   // --- Latin ---
@@ -415,6 +468,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'IV', 'V', 'V'],
     genre: 'Latin',
     description: 'The iconic La Bamba loop. Infectious and danceable.',
+    examples: ['La Bamba', 'Twist and Shout', 'Louie Louie'],
   },
   {
     id: 'latin-son',
@@ -422,6 +476,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'IV', 'V', 'I'],
     genre: 'Latin',
     description: 'Foundation of Cuban son music. Warm and rhythmic.',
+    examples: ['Guantanamera', 'Cielito Lindo'],
   },
   {
     id: 'latin-bolero',
@@ -429,6 +484,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'IV', 'V7', 'I'],
     genre: 'Latin',
     description: 'Romantic Latin bolero. Slow and passionate.',
+    examples: ['Bésame Mucho', 'Quizás Quizás Quizás', 'Perfidia'],
   },
   {
     id: 'latin-cumbia',
@@ -436,6 +492,7 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'V', 'V', 'I'],
     genre: 'Latin',
     description: 'Colombian cumbia groove. Simple and infectious.',
+    examples: ['La Cucaracha', 'De Colores', 'My Bonnie Lies Over the Ocean'],
   },
 ];
 

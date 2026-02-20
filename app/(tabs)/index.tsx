@@ -201,6 +201,9 @@ export default function HomeScreen() {
             </TouchableOpacity>
           </View>
           <Text style={styles.keyLabel}>Key of {key}</Text>
+          {prog.examples && prog.examples.length > 0 && (
+            <Text style={styles.exampleLabel}>♪ {prog.examples[0]}</Text>
+          )}
         </View>
 
         {/* Chord cards — full width, left-aligned like title */}
@@ -384,6 +387,13 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.primary,
     fontFamily: 'monospace',
+    marginTop: spacing.xs,
+  },
+  exampleLabel: {
+    fontSize: 12,
+    color: colors.textLight,
+    fontFamily: 'monospace',
+    fontStyle: 'italic',
     marginTop: spacing.xs,
   },
   chordRow: {

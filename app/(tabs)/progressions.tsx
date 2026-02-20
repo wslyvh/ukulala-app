@@ -114,6 +114,10 @@ export default function ProgressionsScreen() {
           <View style={styles.accordionContent}>
             <Text style={styles.detailDesc}>{item.description}</Text>
 
+            {item.examples && item.examples.length > 0 && (
+              <Text style={styles.examples}>♪ {item.examples.join(' · ')}</Text>
+            )}
+
             {/* Key selector */}
             <ScrollView
               horizontal
@@ -290,18 +294,25 @@ const styles = StyleSheet.create({
   accordionContent: {
     borderTopWidth: 1,
     borderTopColor: colors.border,
-    marginTop: spacing.sm,
-    paddingTop: spacing.sm,
+    marginTop: spacing.md,
+    paddingTop: spacing.md,
   },
   detailDesc: {
     fontSize: 13,
     color: colors.textMuted,
     fontFamily: "monospace",
     lineHeight: 20,
-    marginBottom: spacing.sm,
+    marginBottom: spacing.md,
+  },
+  examples: {
+    fontSize: 12,
+    color: colors.textLight,
+    fontFamily: 'monospace',
+    fontStyle: 'italic',
+    marginBottom: spacing.md,
   },
   keyScroll: {
-    marginBottom: spacing.sm,
+    marginBottom: spacing.md,
   },
   keyScrollContent: {
     gap: spacing.xs,
@@ -333,8 +344,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: spacing.xs,
-    marginTop: spacing.xs,
-    paddingBottom: spacing.xs,
+    marginTop: spacing.sm,
+    paddingBottom: spacing.sm,
   },
   chordCard: {
     flexGrow: 0,
