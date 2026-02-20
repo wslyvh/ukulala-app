@@ -39,6 +39,27 @@ export const progressions: ProgressionData[] = [
     description: 'Major 4 variant replacing vi with ii for a brighter feel.',
   },
   {
+    id: 'stepwise-pop',
+    name: 'Stepwise Pop',
+    numerals: ['I', 'ii', 'IV'],
+    genre: 'Pop',
+    description: 'Beginner-friendly lift from tonic to ii into IV.',
+  },
+  {
+    id: 'pop-rotation-lift',
+    name: 'Pop Rotation Lift',
+    numerals: ['IV', 'I', 'V', 'vi'],
+    genre: 'Pop',
+    description: 'A IV-start pop loop that builds then soft-lands on vi.',
+  },
+  {
+    id: 'doo-wop-variant',
+    name: 'Doo-Wop Variant',
+    numerals: ['I', 'vi', 'iii', 'V'],
+    genre: 'Pop',
+    description: 'Classic-sounding variant with a smooth iii step before V.',
+  },
+  {
     id: 'minor-4',
     name: 'Minor 4',
     numerals: ['I', 'vi', 'iii', 'vii°'],
@@ -153,6 +174,13 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'IV', 'I', 'I'],
     genre: 'Blues',
     description: 'Simple two-chord blues vamp over four bars.',
+  },
+  {
+    id: 'the-blues',
+    name: 'The Blues',
+    numerals: ['I', 'IV', 'I', 'V', 'I'],
+    genre: 'Blues',
+    description: 'A straightforward blues line that returns firmly to the tonic.',
   },
   {
     id: '8-bar-blues',
@@ -292,6 +320,20 @@ export const progressions: ProgressionData[] = [
     numerals: ['I', 'IV', 'V', 'V'],
     genre: 'Folk & Country',
     description: 'Fast flatpicking energy. Keep your fingers moving.',
+  },
+  {
+    id: 'folk-two-chord',
+    name: 'Folk Two-Chord',
+    numerals: ['I', 'V'],
+    genre: 'Folk & Country',
+    description: 'Minimal folk foundation that works for many campfire songs.',
+  },
+  {
+    id: 'folk-two-chord-iv',
+    name: 'Folk Two-Chord (I-IV)',
+    numerals: ['I', 'IV'],
+    genre: 'Folk & Country',
+    description: 'Ultra-simple campfire progression using just I and IV.',
   },
 
   // --- Island ---
