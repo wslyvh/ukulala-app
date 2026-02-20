@@ -40,11 +40,7 @@ export default function ChordsScreen() {
     }
     if (search.trim()) {
       const q = search.trim().toLowerCase();
-      result = result.filter(
-        (c) =>
-          c.name.toLowerCase().includes(q) ||
-          c.fullName.toLowerCase().includes(q)
-      );
+      result = result.filter((c) => c.name.toLowerCase().includes(q));
     }
     return result;
   }, [search, activeCategory, chords]);
