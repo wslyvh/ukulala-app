@@ -8,7 +8,7 @@ const config: ExpoConfig = {
   version: "1.0.0",
   orientation: "default",
   icon: "./assets/images/icon.png",
-  scheme: isDev ? "ukulalaappdev" : "ukulalaapp",
+  scheme: isDev ? "ukulaladev" : "ukulala",
   userInterfaceStyle: "automatic",
   newArchEnabled: true,
   ios: {
@@ -17,6 +17,9 @@ const config: ExpoConfig = {
   },
   android: {
     package: isDev ? "dev.wslyvh.ukulala" : "com.wslyvh.ukulala.app",
+    playStoreUrl: isDev
+      ? undefined
+      : "https://play.google.com/store/apps/details?id=com.wslyvh.ukulala.app",
     adaptiveIcon: {
       backgroundColor: "#efdfbf",
       foregroundImage: "./assets/images/android-icon-foreground.png",
