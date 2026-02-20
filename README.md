@@ -1,50 +1,17 @@
-# Welcome to your Expo app 👋
+# Ukulala
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Tired of playing the same chord progressions over and over?
 
-## Get started
+Ukulala helps you break out of the loop and explore your ukulele. Whether you're a beginner building your chord vocabulary or an intermediate player looking for new inspiration, Ukulala gives you something fresh every time you pick up your uke.
 
-1. Install dependencies
+**Chord Progressions**
+58 progressions across 8 genres, Pop, Rock, Blues, Jazz, Folk & Country, Island, Latin, and Classics. Pick a key, hit shuffle, and see the chords laid out in front of you. Each progression comes with song examples so you know what you're working toward. Star your favorites to build a personal practice list.
 
-   ```bash
-   npm install
-   ```
+**Chord Library**
+Over 70 chords with clear fingering diagrams, Major, Minor, 7th, Diminished, Augmented, Suspended, and more. Tap any chord to zoom in, and cycle through alternate voicings to find what works best for your hand.
 
-2. Start the app
+**For Standard and Baritone**
+Switch between standard tuning (GCEA) and baritone (DGBE).
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+**No nonsense**
+No account. No ads. No personal data collected. Just you and your ukulele.
