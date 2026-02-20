@@ -200,7 +200,9 @@ export default function HomeScreen() {
               </Text>
             </TouchableOpacity>
           </View>
-          <Text style={styles.keyLabel}>Key of {key}</Text>
+          <TouchableOpacity onPress={() => router.push(`/key?key=${key}`)} activeOpacity={0.7}>
+            <Text style={styles.keyLabel}>Key of {key}</Text>
+          </TouchableOpacity>
           {prog.examples && prog.examples.length > 0 && (
             <Text style={styles.exampleLabel}>♪ {prog.examples[0]}</Text>
           )}

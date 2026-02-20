@@ -23,6 +23,10 @@ export default function RootLayout() {
             name="settings"
             options={{ presentation: "modal", headerShown: false }}
           />
+          <Stack.Screen
+            name="key"
+            options={{ presentation: "modal", headerShown: false }}
+          />
           <Stack.Screen name="welcome" options={{ headerShown: false }} />
         </Stack>
         <StatusBar style="auto" />
