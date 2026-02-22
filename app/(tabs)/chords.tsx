@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { useFocusEffect } from 'expo-router';
-import { ScreenView, Card, Chip } from '@/src/ui';
+import { ScreenView, ScreenHeader, Card, Chip } from '@/src/ui';
 import { ZoomableChordDiagram } from '@/src/components/ZoomableChordDiagram';
 import { CHORD_CATEGORIES } from '@/src/data/chords';
 import type { ChordCategory, ChordData } from '@/src/data/chords';
@@ -47,9 +47,10 @@ export default function ChordsScreen() {
 
   return (
     <ScreenView>
-      <View style={styles.header}>
-        <Text style={styles.title}>Chord Library</Text>
-
+      <ScreenHeader
+        title="Chord Library"
+        description="Browse chord shapes, fingerings, and alternate voicings."
+      >
         {/* Search */}
         <TextInput
           style={styles.searchInput}
@@ -81,7 +82,7 @@ export default function ChordsScreen() {
             />
           ))}
         </View>
-      </View>
+      </ScreenHeader>
 
       {/* Selected chord detail */}
       {selected && (() => {
@@ -190,18 +191,6 @@ export default function ChordsScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.xxl,
-    paddingBottom: spacing.sm,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '900',
-    color: colors.text,
-    fontFamily: 'monospace',
-    marginBottom: spacing.md,
-  },
   searchInput: {
     backgroundColor: colors.surface,
     borderWidth: 2,

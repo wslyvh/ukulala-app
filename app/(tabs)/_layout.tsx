@@ -40,10 +40,17 @@ export default function TabLayout() {
       <Tabs.Screen
         name="progressions"
         options={{
-          title: 'Progressions',
+          title: 'Progs',
           tabBarIcon: ({ focused }) => (
             <TabIcon label=">" focused={focused} />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="learn"
+        options={{
+          title: 'Learn',
+          tabBarIcon: ({ focused }) => <TabIcon label="?" focused={focused} />,
         }}
       />
     </Tabs>

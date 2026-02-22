@@ -5,7 +5,7 @@ import { GENRES, progressions } from "@/src/data/progressions";
 import type { VoicingPrefs } from "@/src/storage";
 import { loadStarredProgs, loadVoicingPrefs, saveStarredProgs } from "@/src/storage";
 import { colors, radii, spacing } from "@/src/theme";
-import { Chip, ScreenView } from "@/src/ui";
+import { Chip, ScreenHeader, ScreenView } from "@/src/ui";
 import type { Key } from "@/src/utils/music";
 import { ALL_KEYS, resolveProgression, numeralDegree } from "@/src/utils/music";
 import { useFocusEffect } from "expo-router";
@@ -176,8 +176,10 @@ export default function ProgressionsScreen() {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
         ListHeaderComponent={
-          <View style={styles.header}>
-            <Text style={styles.title}>Progressions</Text>
+          <ScreenHeader
+            title="Progressions"
+            description="Common chord progressions across genres."
+          >
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -206,7 +208,7 @@ export default function ProgressionsScreen() {
                 />
               ))}
             </ScrollView>
-          </View>
+          </ScreenHeader>
         }
         renderItem={renderItem}
         ListEmptyComponent={
@@ -218,18 +220,6 @@ export default function ProgressionsScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.xxl,
-    paddingBottom: spacing.sm,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "900",
-    color: colors.text,
-    fontFamily: "monospace",
-    marginBottom: spacing.md,
-  },
   chipScroll: {
     paddingBottom: spacing.xs,
     alignItems: "center",
