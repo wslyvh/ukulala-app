@@ -42,13 +42,13 @@ const config: ExpoConfig = {
         backgroundColor: "#efdfbf",
       },
     ],
-    "expo-iap",
   ],
   experiments: {
     typedRoutes: true,
     reactCompiler: true,
   },
   extra: {
+    rcApiKey: process.env.RC_API_KEY ?? '',
     router: {},
     eas: {
       projectId: "8498fe35-13c5-4c77-9cb2-abcdfcc49dc6",

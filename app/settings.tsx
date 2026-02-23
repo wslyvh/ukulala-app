@@ -32,7 +32,8 @@ export default function SettingsScreen() {
   return (
     <ScreenView>
       <ScrollView contentContainerStyle={styles.scroll}>
-        {/* Header: matches home screen layout exactly */}
+
+        {/* Header — mirrors home screen layout */}
         <View style={styles.header}>
           <View style={styles.headerSpacer} />
           <Image
@@ -50,7 +51,41 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-        {/* Instrument section */}
+        {/* App identity */}
+        <Text style={styles.title}>Ukulala</Text>
+        <Text style={styles.tagline}>Ukulele chords & progression trainer</Text>
+
+        <View style={styles.divider} />
+
+        {/* Description */}
+        <Text style={styles.body}>
+          Ukulala helps you break out of the loop and explore your ukulele.
+          Whether you're a beginner building your chord vocabulary or an
+          intermediate player looking for new inspiration, Ukulala gives you
+          something fresh every time you pick up your uke.
+        </Text>
+
+        <View style={styles.divider} />
+
+        {/* Support */}
+        <TouchableOpacity
+          style={styles.friendsBanner}
+          onPress={() => router.push('/friends')}
+          activeOpacity={0.8}
+        >
+          <View style={styles.friendsBannerTop}>
+            <Text style={styles.friendsBannerTitle}>Friends of Ukulala</Text>
+            <Text style={styles.friendsBannerHeart}>♥</Text>
+          </View>
+          <Text style={styles.friendsBannerBody}>
+            If you enjoy the app, consider supporting its development.
+          </Text>
+          <Text style={styles.friendsBannerCta}>Become a Friend →</Text>
+        </TouchableOpacity>
+
+        <View style={styles.divider} />
+
+        {/* Instrument */}
         <Text style={styles.sectionTitle}>Instrument</Text>
         <View style={styles.tuningRow}>
           {TUNING_OPTIONS.map((opt) => (
@@ -85,22 +120,7 @@ export default function SettingsScreen() {
 
         <View style={styles.divider} />
 
-        <Text style={styles.title}>Ukulala</Text>
-        <Text style={styles.tagline}>Ukulele chords & progression trainer</Text>
-
-        <View style={styles.divider} />
-
-        <Text style={styles.body}>
-          A simple chord and progression trainer to explore your ukulele, get
-          inspiration and expand your chord vocabulary.
-        </Text>
-
-        <Text style={styles.body}>
-          No accounts, no personal data — just music!
-        </Text>
-
-        <View style={styles.divider} />
-
+        {/* Links */}
         <Text style={styles.sectionTitle}>Links</Text>
 
         {LINKS.map((link) => (
@@ -119,19 +139,19 @@ export default function SettingsScreen() {
 
         <TouchableOpacity
           style={[styles.linkRow, { borderBottomWidth: 0 }]}
-          onPress={() => {
-            requestReview();
-          }}
+          onPress={() => requestReview()}
           activeOpacity={0.7}
         >
           <Text style={styles.linkLabel}>Rate this app</Text>
           <Text style={styles.rateStar}>★</Text>
         </TouchableOpacity>
 
+        {/* Footer */}
         <View style={styles.footerContainer}>
           <Text style={styles.footer}>Open-source under MIT license.</Text>
           <Text style={styles.footerMuted}>Made with 🎵 by wslyvh</Text>
         </View>
+
       </ScrollView>
     </ScreenView>
   );
@@ -140,21 +160,19 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   scroll: {
     padding: spacing.lg,
-    paddingTop: spacing.md,
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: spacing.sm,
+    marginBottom: spacing.lg,
   },
   headerSpacer: {
     width: 24,
   },
   logo: {
-    width: 48,
-    height: 48,
-    resizeMode: "contain",
+    width: 40,
+    height: 40,
   },
   headerRight: {
     width: 24,
@@ -284,5 +302,40 @@ const styles = StyleSheet.create({
     fontFamily: "monospace",
     textAlign: "center",
     marginTop: spacing.xs,
+  },
+  friendsBanner: {
+    backgroundColor: colors.bgAlt,
+    borderWidth: 2,
+    borderColor: colors.primary,
+    borderRadius: radii.md,
+    padding: spacing.md,
+    gap: spacing.sm,
+  },
+  friendsBannerTop: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  friendsBannerTitle: {
+    fontSize: 15,
+    fontWeight: "800",
+    color: colors.text,
+    fontFamily: "monospace",
+  },
+  friendsBannerHeart: {
+    fontSize: 20,
+    color: colors.primary,
+  },
+  friendsBannerBody: {
+    fontSize: 13,
+    color: colors.textMuted,
+    fontFamily: "monospace",
+    lineHeight: 20,
+  },
+  friendsBannerCta: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: colors.primaryContent,
+    fontFamily: "monospace",
   },
 });

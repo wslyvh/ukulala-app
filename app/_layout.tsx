@@ -1,4 +1,5 @@
 import { incrementSession } from "@/src/review";
+import { SupporterProvider } from "@/src/supporter";
 import { TuningProvider } from "@/src/tuning";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -15,26 +16,32 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <TuningProvider>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="settings"
-            options={{ presentation: "modal", headerShown: false }}
-          />
-          <Stack.Screen
-            name="key"
-            options={{ presentation: "modal", headerShown: false }}
-          />
-          <Stack.Screen
-            name="article"
-            options={{ presentation: "modal", headerShown: false }}
-          />
-          <Stack.Screen name="welcome" options={{ headerShown: false }} />
-        </Stack>
-        <StatusBar style="auto" />
-      </GestureHandlerRootView>
-    </TuningProvider>
+    <SupporterProvider>
+      <TuningProvider>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="settings"
+              options={{ presentation: "modal", headerShown: false }}
+            />
+            <Stack.Screen
+              name="friends"
+              options={{ presentation: "modal", headerShown: false }}
+            />
+            <Stack.Screen
+              name="key"
+              options={{ presentation: "modal", headerShown: false }}
+            />
+            <Stack.Screen
+              name="article"
+              options={{ presentation: "modal", headerShown: false }}
+            />
+            <Stack.Screen name="welcome" options={{ headerShown: false }} />
+          </Stack>
+          <StatusBar style="auto" />
+        </GestureHandlerRootView>
+      </TuningProvider>
+    </SupporterProvider>
   );
 }
