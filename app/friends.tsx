@@ -1,9 +1,10 @@
-import { formatPrice, useSupporter } from "@/src/supporter";
+import { formatPrice, useFriends } from "@/src/friends";
 import { colors, radii, spacing } from "@/src/theme";
 import { ScreenView } from "@/src/ui";
 import { useRouter } from "expo-router";
 import {
   ActivityIndicator,
+  Linking,
   ScrollView,
   StyleSheet,
   Text,
@@ -11,6 +12,21 @@ import {
   View,
 } from "react-native";
 import type { PurchasesPackage } from "react-native-purchases";
+
+const PRODUCT_LABELS: Record<string, string> = {
+  "ukulala_friends:monthly": "Monthly friend",
+  "ukulala_friends:yearly": "Annual friend",
+  ukulala_tip: "Friend of Ukulala",
+};
+
+const MANAGE_URL = "https://play.google.com/store/account/subscriptions";
+
+function formatExpiry(iso: string): string {
+  return new Date(iso).toLocaleDateString("en-US", {
+    month: "long",
+    year: "numeric",
+  });
+}
 
 const PERKS = [
   "Support development of the App",
@@ -31,13 +47,20 @@ const PKG_META: Record<string, PkgMeta> = {
 export default function FriendsScreen() {
   const router = useRouter();
   const {
-    isSupporter,
+    isFriend,
     isLoaded,
     isLoading,
     packages,
+    activeProductId,
+    expirationDate,
     purchasePackage,
     restorePurchases,
-  } = useSupporter();
+  } = useFriends();
+
+  const isLifetime = activeProductId === "ukulala_tip";
+  const planLabel = activeProductId
+    ? (PRODUCT_LABELS[activeProductId] ?? "Friend")
+    : "Friend";
 
   const orderedPackages = PKG_ORDER.map((id) =>
     packages.find((p) => p.identifier === id),
@@ -63,14 +86,43 @@ export default function FriendsScreen() {
 
         <View style={styles.divider} />
 
-        {isSupporter ? (
+        {isFriend ? (
           <View style={styles.thankYouBlock}>
             <Text style={styles.thankYouHeading}>
-              You're a Friend of Ukulala.
+              You're a Friend of Ukulala ❤️
             </Text>
             <Text style={styles.thankYouSub}>
-              Thank you for your support. ❤️
+              Thank you for your support. It means a lot and helps keep Ukulala
+              free and growing.
             </Text>
+
+            <View style={styles.planCard}>
+              <Text style={styles.planLabel}>{planLabel}</Text>
+              {!isLifetime && expirationDate ? (
+                <Text style={styles.planDetail}>
+                  Renews {formatExpiry(expirationDate)}
+                </Text>
+              ) : (
+                <Text style={styles.planDetail}>One-time — no renewal</Text>
+              )}
+            </View>
+
+            {!isLifetime && (
+              <>
+                <TouchableOpacity
+                  style={styles.manageBtn}
+                  onPress={() => Linking.openURL(MANAGE_URL)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.manageBtnText}>
+                    Manage subscription →
+                  </Text>
+                </TouchableOpacity>
+                <Text style={styles.cancelNote}>
+                  Cancel any time from the Play Store. No questions asked.
+                </Text>
+              </>
+            )}
           </View>
         ) : (
           <>
@@ -286,8 +338,6 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.lg,
   },
   thankYouBlock: {
-    paddingVertical: spacing.xl,
-    alignItems: "center",
     gap: spacing.md,
   },
   thankYouHeading: {
@@ -295,13 +345,48 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     color: colors.text,
     fontFamily: "monospace",
-    textAlign: "center",
   },
   thankYouSub: {
     fontSize: 14,
     color: colors.textMuted,
     fontFamily: "monospace",
-    textAlign: "center",
+    lineHeight: 22,
+  },
+  planCard: {
+    backgroundColor: colors.card,
+    borderWidth: 2,
+    borderColor: colors.primary,
+    borderRadius: radii.md,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.md,
+    gap: spacing.xs,
+    marginTop: spacing.sm,
+  },
+  planLabel: {
+    fontSize: 15,
+    fontWeight: "800",
+    color: colors.text,
+    fontFamily: "monospace",
+  },
+  planDetail: {
+    fontSize: 13,
+    color: colors.textMuted,
+    fontFamily: "monospace",
+  },
+  manageBtn: {
+    paddingVertical: spacing.sm,
+  },
+  manageBtnText: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: colors.primaryContent,
+    fontFamily: "monospace",
+  },
+  cancelNote: {
+    fontSize: 12,
+    color: colors.textLight,
+    fontFamily: "monospace",
+    lineHeight: 18,
   },
   footer: {
     fontSize: 12,

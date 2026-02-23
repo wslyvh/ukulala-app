@@ -1,5 +1,5 @@
 import { incrementSession } from "@/src/review";
-import { SupporterProvider } from "@/src/supporter";
+import { FriendsProvider } from "@/src/friends";
 import { TuningProvider } from "@/src/tuning";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -16,7 +16,7 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <SupporterProvider>
+    <FriendsProvider>
       <TuningProvider>
         <GestureHandlerRootView style={{ flex: 1 }}>
           <Stack>
@@ -42,6 +42,6 @@ export default function RootLayout() {
           <StatusBar style="auto" />
         </GestureHandlerRootView>
       </TuningProvider>
-    </SupporterProvider>
+    </FriendsProvider>
   );
 }
