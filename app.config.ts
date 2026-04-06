@@ -14,6 +14,9 @@ const config: ExpoConfig = {
   ios: {
     bundleIdentifier: isDev ? "dev.wslyvh.ukulala" : "com.wslyvh.ukulala.app",
     supportsTablet: true,
+    config: {
+      usesNonExemptEncryption: false,
+    },
   },
   android: {
     package: isDev ? "dev.wslyvh.ukulala" : "com.wslyvh.ukulala.app",
@@ -48,7 +51,8 @@ const config: ExpoConfig = {
     reactCompiler: true,
   },
   extra: {
-    rcApiKey: process.env.RC_API_KEY ?? '',
+    rcApiKeyAndroid: process.env.RC_API_KEY_ANDROID ?? '',
+    rcApiKeyIos: process.env.RC_API_KEY_IOS ?? '',
     router: {},
     eas: {
       projectId: "8498fe35-13c5-4c77-9cb2-abcdfcc49dc6",

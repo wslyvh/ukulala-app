@@ -20,6 +20,8 @@ const PRODUCT_LABELS: Record<string, string> = {
 };
 
 const MANAGE_URL = "https://play.google.com/store/account/subscriptions";
+const PRIVACY_URL = "https://www.ukulalala.com/privacy";
+const TERMS_URL = "https://www.ukulalala.com/terms";
 
 function formatExpiry(iso: string): string {
   return new Date(iso).toLocaleDateString("en-US", {
@@ -205,6 +207,21 @@ export default function FriendsScreen() {
         <Text style={styles.footer}>
           No accounts, no personal data — just music!
         </Text>
+        <View style={styles.legalLinks}>
+          <TouchableOpacity
+            onPress={() => Linking.openURL(PRIVACY_URL)}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.legalLinkText}>Privacy Policy</Text>
+          </TouchableOpacity>
+          <Text style={styles.legalLinkSeparator}>•</Text>
+          <TouchableOpacity
+            onPress={() => Linking.openURL(TERMS_URL)}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.legalLinkText}>Terms of Use</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </ScreenView>
   );
@@ -393,5 +410,23 @@ const styles = StyleSheet.create({
     color: colors.textLight,
     fontFamily: "monospace",
     textAlign: "center",
+  },
+  legalLinks: {
+    marginTop: spacing.md,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: spacing.xs,
+  },
+  legalLinkText: {
+    fontSize: 12,
+    color: colors.textLight,
+    fontFamily: "monospace",
+    textDecorationLine: "underline",
+  },
+  legalLinkSeparator: {
+    fontSize: 12,
+    color: colors.textLight,
+    fontFamily: "monospace",
   },
 });

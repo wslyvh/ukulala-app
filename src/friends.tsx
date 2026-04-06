@@ -13,9 +13,9 @@ import type { PurchasesPackage } from "react-native-purchases";
 export type { PurchasesPackage };
 
 const MOCK_PACKAGES = [
-  { identifier: "$rc_monthly",  product: { priceString: "€2"  } },
-  { identifier: "$rc_annual",   product: { priceString: "€15" } },
-  { identifier: "$rc_lifetime", product: { priceString: "€5"  } },
+  { identifier: "$rc_monthly", product: { priceString: "€2" } },
+  { identifier: "$rc_annual", product: { priceString: "€15" } },
+  { identifier: "$rc_lifetime", product: { priceString: "€5" } },
 ] as unknown as PurchasesPackage[];
 
 export function formatPrice(price: string): string {
@@ -40,8 +40,8 @@ const FriendsContext = createContext<FriendsContextValue>({
   packages: [],
   activeProductId: null,
   expirationDate: null,
-  purchasePackage: async () => {},
-  restorePurchases: async () => {},
+  purchasePackage: async () => { },
+  restorePurchases: async () => { },
 });
 
 export function FriendsProvider({ children }: { children: React.ReactNode }) {
@@ -71,10 +71,8 @@ export function FriendsProvider({ children }: { children: React.ReactNode }) {
       try {
         // eslint-disable-next-line @typescript-eslint/no-require-imports
         const Purchases = require("react-native-purchases").default;
-        const extra = Constants.expoConfig?.extra as
-          | Record<string, string>
-          | undefined;
-        Purchases.configure({ apiKey: extra?.rcApiKey ?? "" });
+        const apiKey = Platform.OS === "android" ? Constants.expoConfig?.extra?.rcApiKeyAndroid : Constants.expoConfig?.extra?.rcApiKeyIos;
+        Purchases.configure({ apiKey });
 
         const customerInfo = await Purchases.getCustomerInfo();
         applyCustomerInfo(customerInfo);
