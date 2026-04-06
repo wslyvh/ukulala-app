@@ -5,6 +5,7 @@ import { useRouter } from "expo-router";
 import {
   ActivityIndicator,
   Linking,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -19,7 +20,10 @@ const PRODUCT_LABELS: Record<string, string> = {
   ukulala_tip: "Friend of Ukulala",
 };
 
-const MANAGE_URL = "https://play.google.com/store/account/subscriptions";
+const MANAGE_URL =
+  Platform.OS === "ios"
+    ? "https://apps.apple.com/account/subscriptions"
+    : "https://play.google.com/store/account/subscriptions";
 const PRIVACY_URL = "https://www.ukulalala.com/privacy";
 const TERMS_URL = "https://www.ukulalala.com/terms";
 
@@ -121,7 +125,7 @@ export default function FriendsScreen() {
                   </Text>
                 </TouchableOpacity>
                 <Text style={styles.cancelNote}>
-                  Cancel any time from the Play Store. No questions asked.
+                  Cancel any time from the App Store. No questions asked.
                 </Text>
               </>
             )}
