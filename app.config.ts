@@ -5,7 +5,7 @@ const isDev = process.env.APP_ENVIRONMENT === "development";
 const config: ExpoConfig = {
   name: isDev ? "Ukulala DEV Build" : "Ukulala",
   slug: "ukulala-app",
-  version: "1.0.0",
+  version: "1.0.2",
   orientation: "default",
   icon: "./assets/images/icon.png",
   scheme: isDev ? "ukulaladev" : "ukulala",

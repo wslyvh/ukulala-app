@@ -15,12 +15,7 @@
       }
     },
     "production": {
-      "ios": {
-        "autoIncrement": "version"
-      },
-      "android": {
-        "autoIncrement": "version"
-      }
+      "autoIncrement": true
     }
   },
   "submit": {
