@@ -15,7 +15,12 @@
       }
     },
     "production": {
-      "autoIncrement": "version"
+      "ios": {
+        "autoIncrement": "version"
+      },
+      "android": {
+        "autoIncrement": "version"
+      }
     }
   },
   "submit": {
